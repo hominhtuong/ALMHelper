@@ -8,12 +8,11 @@ HI,
 Description:
 ALMHelper is a powerful Swift library designed to simplify Applovin MAX ad management. It provides:
 
-✅ Easy Ad Loading & Displaying – Load and show Interstitial, Rewarded, Banner, Native, and Open Ads with minimal setup.
-✅ Smart Delegation System – Improved delegate handling for cleaner and more maintainable code.
-✅ Ad Frequency Control – Avoid ad spam with built-in frequency capping and impression percentage logic.
-✅ GDPR & Privacy Compliance – Includes built-in tracking request and CMP handling.
-✅ Optimized Performance – Efficient ad loading and display logic for better user experience and revenue optimization.
-
+✅ Easy Ad Loading & Displaying – Load and show Interstitial, Rewarded, Banner, Native, and Open Ads with minimal setup.  
+✅ Smart Delegation System – Improved delegate handling for cleaner and more maintainable code.  
+✅ Ad Frequency Control – Avoid ad spam with built-in frequency capping and impression percentage logic.  
+✅ GDPR & Privacy Compliance – Includes built-in tracking request and CMP handling.  
+✅ Optimized Performance – Efficient ad loading and display logic for better user experience and revenue optimization.  
 ⚡ ALMHelper – The ultimate tool for maximizing your `Applovin MAX` ad revenue! 🚀  
 
 ## Installation with CocoaPods
