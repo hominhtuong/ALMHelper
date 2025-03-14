@@ -42,6 +42,7 @@ extension OpenAdManager {
         appOpenAd.delegate = self
         appOpenAd.revenueDelegate = self
 
+        delegate?.openAdLoadCalled(for: adUnitId)
         appOpenAd.load()
         AdLog("OpenAd loadAd is called")
     }

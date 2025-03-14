@@ -8,6 +8,9 @@
 import AppLovinSDK
 
 public protocol ALMHelperDelegate {
+    func interstitialAdLoadCalled(for adUnitIdentifier: String)
+    func rewardAdLoadCalled(for adUnitIdentifier: String)
+    func openAdLoadCalled(for adUnitIdentifier: String)
     
     func interstitialAdShowCalled(for adUnitIdentifier: String)
     func rewardAdShowCalled(for adUnitIdentifier: String)
@@ -34,6 +37,10 @@ public protocol ALMHelperDelegate {
 }
 
 public extension ALMHelperDelegate {
+    func interstitialAdLoadCalled(for adUnitIdentifier: String) {}
+    func rewardAdLoadCalled(for adUnitIdentifier: String) {}
+    func openAdLoadCalled(for adUnitIdentifier: String) {}
+    
     func interstitialAdShowCalled(for adUnitIdentifier: String) {}
     func rewardAdShowCalled(for adUnitIdentifier: String) {}
     func openAdShowCalled(for adUnitIdentifier: String) {}

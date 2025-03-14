@@ -41,6 +41,7 @@ public extension RewardAdManager {
         rewardAd.delegate = self
         rewardAd.revenueDelegate = self
 
+        delegate?.rewardAdLoadCalled(for: adUnitId)
         rewardAd.load()
         AdLog("RewardAd loadAd is called")
     }

@@ -8,13 +8,19 @@
 import AppLovinSDK
 
 public class NativeAdManager: NSObject {
-    public init(adUnitId: String) {
+    public init(adUnitId: String, delegate: MANativeAdDelegate? = nil, revenueDelegate: MAAdRevenueDelegate? = nil) {
         self.adUnitId = adUnitId
+        super.init()
+        
         self.nativeAdLoader = MANativeAdLoader(adUnitIdentifier: adUnitId)
+        self.nativeAdLoader?.nativeAdDelegate = delegate ?? self
+        self.nativeAdLoader?.revenueDelegate = revenueDelegate ?? self
     }
     
+    public var delegate: ALMHelperDelegate?
+    
     private let adUnitId: String
-    private let nativeAdLoader: MANativeAdLoader?
+    private var nativeAdLoader: MANativeAdLoader?
     private var nativeAd: MAAd?
     private var nativeAdView: UIView?
     
@@ -22,7 +28,6 @@ public class NativeAdManager: NSObject {
         return ALMHelper.shared.configs
     }
     
-    var delegate: ALMHelperDelegate?
 }
 
 public extension NativeAdManager {
@@ -32,11 +37,9 @@ public extension NativeAdManager {
         }
         
         guard let nativeAdLoader = self.nativeAdLoader else {
+            AdLog("NativeAdLoader is nil")
             return
         }
-        
-        nativeAdLoader.nativeAdDelegate = self
-        nativeAdLoader.revenueDelegate = self
         nativeAdLoader.loadAd()
     }
 }

@@ -12,11 +12,11 @@ public class ALMConfiguration {
     ///default is 100% - alway show
     public var impressionPercentage: Int = 100
     
-    public var enableAds = false
-    public var showAoa = false
-    public var showResume = false
-    public var showInterstitial = false
-    public var showReward = false
+    public var enableAds = true
+    public var showAoa = true
+    public var showResume = true
+    public var showInterstitial = true
+    public var showReward = true
     
     public var retryAfterFailed: Bool = true
     public var loadAdAfterShowed: Bool = true

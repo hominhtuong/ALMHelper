@@ -42,6 +42,7 @@ public extension InterstitialManager {
         interstitialAd.delegate = self
         interstitialAd.revenueDelegate = self
 
+        delegate?.interstitialAdLoadCalled(for: adUnitId)
         interstitialAd.load()
         AdLog("Interstitial loadAd is called")
     }

@@ -5,39 +5,22 @@
 //  Created by Admin on 14/3/25.
 //
 
-import MiTuKit
 import ALMHelper
+import MiTuKit
 
 class ViewController: UIViewController {
-    
+
     //Variables
     let showAdButton = UIButton()
     let bannerView = UIView()
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .random
-        
-        setupAd()
+        view.backgroundColor = .white
+
         setupView()
     }
-    
-    func setupAd() {
-        Task {
-            let adUnits = ALMUnits(
-                openAdUnitId: Configurations.AdUnits.openAdUnitId,
-                bannerAdUnitId: Configurations.AdUnits.bannerAdUnitId,
-                interstitialAdUnitId: Configurations.AdUnits.interstitialAdUnitId,
-                rewardAdUnitId: Configurations.AdUnits.rewardAdUnitId,
-                nativeAdUnitId: Configurations.AdUnits.nativeAdUnitId
-            )
-            await ALMHelper.shared.setup(sdkKey: Configurations.applovinSDKKey, units: adUnits)
-            ALMHelper.shared.loadInterstitial()
-            
-            //...
-        }
-    }
-    
+
     func setupView() {
         bannerView >>> view >>> {
             $0.snp.makeConstraints {
@@ -45,16 +28,17 @@ class ViewController: UIViewController {
                 $0.bottom.equalTo(botSafe)
                 $0.height.equalTo(50)
             }
-            $0.attachBanner(backgroundColor: .random)
+            $0.attachBanner(shimmerColor: .red)
         }
-        
+
         showAdButton >>> view >>> {
             $0.snp.makeConstraints {
                 $0.center.equalToSuperview()
-                $0.width.equalTo(100)
-                $0.height.equalTo(30)
+                $0.width.equalTo(120)
+                $0.height.equalTo(45)
             }
-            $0.layer.cornerRadius = 15
+            $0.backgroundColor = .random
+            $0.layer.cornerRadius = 16
             $0.setTitle("Show Ad", for: .normal)
             $0.handle {
                 let random = Int.random(in: 0..<3)
@@ -66,7 +50,7 @@ class ViewController: UIViewController {
                 case 1:
                     printDebug("showInterstitial")
                     ALMHelper.shared.showInterstitial { state in
-                        
+
                     }
                     break
                 case 2:
@@ -74,11 +58,9 @@ class ViewController: UIViewController {
                     ALMHelper.shared.showOpenAds()
                     break
                 default:
-                    printDebug("attachBanner")
-                    self.bannerView.reloadBanner(backgroundColor: .random)
                     break
                 }
-                
+
             }
         }
     }

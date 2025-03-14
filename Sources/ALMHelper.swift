@@ -153,8 +153,10 @@ extension ALMHelper {
     }
 
     public func updateSettings(
-        privacyPolicyURL: String?, termsOfServiceURL: String?,
-        debugUserGeography: Bool
+        privacyPolicyURL: String?,
+        termsOfServiceURL: String?,
+        debugUserGeography: Bool,
+        isVerboseLoggingEnabled: Bool
     ) async {
         let settings = ALSdk.shared().settings
 
@@ -179,18 +181,27 @@ extension ALMHelper {
             #endif
         }
 
+        #if DEBUG
+            settings.isVerboseLoggingEnabled = isVerboseLoggingEnabled
+        #endif
+
     }
 
     public func setup(
-        sdkKey: String, units: ALMUnits, privacyPolicyURL: String? = nil,
-        termsOfServiceURL: String? = nil, debugUserGeography: Bool = true
+        sdkKey: String,
+        units: ALMUnits,
+        privacyPolicyURL: String? = nil,
+        termsOfServiceURL: String? = nil,
+        debugUserGeography: Bool = true,
+        isVerboseLoggingEnabled: Bool = false
     ) async {
         await setupUnits(units: units)
         await initAd(sdkKey: sdkKey)
         await updateSettings(
             privacyPolicyURL: privacyPolicyURL,
             termsOfServiceURL: termsOfServiceURL,
-            debugUserGeography: debugUserGeography)
+            debugUserGeography: debugUserGeography,
+            isVerboseLoggingEnabled: isVerboseLoggingEnabled)
     }
 }
 
@@ -317,84 +328,51 @@ extension ALMHelper {
     }
 }
 
-//MARK: - Native Ads
-extension ALMHelper {
-    public func loadNativeAd(delegate: ALMHelperDelegate? = nil) {
-        guard configs.enableAds, let nativeAdUnitId = adUnits.nativeAdUnitId,
-            nativeAdUnitId.notNil
-        else {
-            AdLog("NativeAd not ready")
-            return
-        }
+//MARK: - Native Ads + Banner Ads
+/**
+ Native ads + banner ads should be initialized using a dedicated class
+ to enable reuse across multiple screens, avoid code duplication,
+ and ensure better lifecycle management.
 
-        let nativeManager = NativeAdManager(adUnitId: nativeAdUnitId)
-        if let delegate = delegate {
-            nativeManager.delegate = delegate
-        }
-        nativeManager.loadAd()
-    }
-}
+ Example: BannerAdManager helps manage banner ads for each screen.
 
-//MARK: - Banner Ads
-extension ALMHelper {
-    public func loadBannerAd(
-        parent view: UIView, backgroundColor: UIColor = .white,
-        delegate: ALMHelperDelegate? = nil
-    ) {
-        guard configs.enableAds, let bannerAdUnitId = adUnits.bannerAdUnitId,
-            bannerAdUnitId.notNil
-        else {
-            AdLog("BannerAd not ready")
-            return
-        }
+ class ViewController: UiViewControlelr {
+    private var bannerAd: BannerAdManager?
+ }
 
-        let bannerManager = BannerAdManager(adUnitId: bannerAdUnitId)
-        if let delegate = delegate {
-            bannerManager.delegate = delegate
-        }
-
-        bannerManager.loadBannerAd(
-            parent: view, backgroundColor: backgroundColor)
-    }
-
-    public func reloadBannerAd(
-        parent view: UIView, backgroundColor: UIColor = .white,
-        delegate: ALMHelperDelegate? = nil
-    ) {
-        guard configs.enableAds, let bannerAdUnitId = adUnits.bannerAdUnitId,
-            bannerAdUnitId.notNil
-        else {
-            AdLog("BannerAd not ready")
-            return
-        }
-
-        for item in view.subviews {
-            item.removeFromSuperview()
-        }
-
-        let bannerManager = BannerAdManager(adUnitId: bannerAdUnitId)
-        if let delegate = delegate {
-            bannerManager.delegate = delegate
-        }
-
-        bannerManager.loadBannerAd(
-            parent: view, backgroundColor: backgroundColor)
-    }
-}
+ func loadAd() {
+    self.bannerAd = BannerAdManager(adUnitId: Configurations.AdUnits.bannerAdUnitId)
+    self.bannerAd?.loadBannerAd(parent: bannerView)
+ }
+ */
 
 //MARK: - Banner Ads Utils
 extension UIView {
     public func attachBanner(
-        backgroundColor: UIColor = .white, delegate: ALMHelperDelegate? = nil
+        bannerManager: BannerAdManager? = nil,
+        shimmerColor: UIColor = .lightGray,
+        delegate: ALMHelperDelegate? = nil
     ) {
-        ALMHelper.shared.loadBannerAd(
-            parent: self, backgroundColor: backgroundColor, delegate: delegate)
-    }
+        guard
+            ALMHelper.shared.configs.enableAds
+        else {
+            AdLog("BannerAd is not enabled")
+            return
+        }
 
-    public func reloadBanner(
-        backgroundColor: UIColor = .white, delegate: ALMHelperDelegate? = nil
-    ) {
-        ALMHelper.shared.reloadBannerAd(
-            parent: self, backgroundColor: backgroundColor, delegate: delegate)
+        var bannerView: BannerAdManager?
+        if let bannerManager = bannerManager {
+            bannerView = bannerManager
+        } else if let adId = ALMHelper.shared.adUnits.bannerAdUnitId {
+            bannerView = BannerAdManager(adUnitId: adId)
+        } else {
+            return
+        }
+
+        if let delegate = delegate {
+            bannerView?.delegate = delegate
+        }
+
+        bannerView?.loadBannerAd(parent: self, shimmerColor: shimmerColor)
     }
 }

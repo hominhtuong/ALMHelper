@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "B2D7C78E-1188-43D8-8B82-98477D5728DE"
+   type = "0"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E48EF906-C42D-4BD2-A643-A539D05DE965"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../Sources/ALMBannerAd.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "39"
+            endingLineNumber = "39"
+            landmarkName = "loadBannerAd(parent:shimmerColor:delegate:revenueDelegate:almDelegate:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "037AE09C-A425-432D-85B8-3C5A37116748"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../Sources/ALMBannerAd.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "32"
+            endingLineNumber = "32"
+            landmarkName = "loadBannerAd(parent:shimmerColor:delegate:revenueDelegate:almDelegate:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8AC02B5D-B25B-4EA3-B87F-9D236616438B"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../Sources/ALMBannerAd.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "42"
+            endingLineNumber = "42"
+            landmarkName = "loadBannerAd(parent:shimmerColor:delegate:revenueDelegate:almDelegate:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "8AC02B5D-B25B-4EA3-B87F-9D236616438B - 217563436da7ff45"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "ALMHelper.BannerAdManager.loadBannerAd(parent: __C.UIView, shimmerColor: __C.UIColor, delegate: Swift.Optional&lt;__C.MAAdViewAdDelegate&gt;, revenueDelegate: Swift.Optional&lt;__C.MAAdRevenueDelegate&gt;, almDelegate: Swift.Optional&lt;ALMHelper.ALMHelperDelegate&gt;) -&gt; ()"
+                  moduleName = "Example.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/admin/Documents/GitShared/ALMaxHelper/Sources/ALMBannerAd.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "42"
+                  endingLineNumber = "42">
+               </Location>
+               <Location
+                  uuid = "8AC02B5D-B25B-4EA3-B87F-9D236616438B - 211242fbb8f023a4"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 () -&gt; () in ALMHelper.BannerAdManager.loadBannerAd(parent: __C.UIView, shimmerColor: __C.UIColor, delegate: Swift.Optional&lt;__C.MAAdViewAdDelegate&gt;, revenueDelegate: Swift.Optional&lt;__C.MAAdRevenueDelegate&gt;, almDelegate: Swift.Optional&lt;ALMHelper.ALMHelperDelegate&gt;) -&gt; ()"
+                  moduleName = "Example.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/admin/Documents/GitShared/ALMaxHelper/Sources/ALMBannerAd.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "43"
+                  endingLineNumber = "43">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

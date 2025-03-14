@@ -5,14 +5,12 @@
 
 ## About  
 HI,  
-Description:
 ALMHelper is a powerful Swift library designed to simplify Applovin MAX ad management. It provides:
 
 ✅ Easy Ad Loading & Displaying – Load and show Interstitial, Rewarded, Banner, Native, and Open Ads with minimal setup.  
 ✅ Smart Delegation System – Improved delegate handling for cleaner and more maintainable code.  
 ✅ Ad Frequency Control – Avoid ad spam with built-in frequency capping and impression percentage logic.  
 ✅ GDPR & Privacy Compliance – Includes built-in tracking request and CMP handling.  
-✅ Optimized Performance – Efficient ad loading and display logic for better user experience and revenue optimization.  
 ⚡ ALMHelper – The ultimate tool for maximizing your `Applovin MAX` ad revenue! 🚀  
 
 ## Installation with CocoaPods
@@ -29,7 +27,7 @@ Once you have your Swift package set up, adding ALMHelper as a dependency is as 
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/hominhtuong/ALMHelper.git", .upToNextMajor(from: "1.0.0"))
+    .package(url: "https://github.com/hominhtuong/ALMHelper.git", .upToNextMajor(from: "1.0.1"))
 ]
 ```
 
@@ -39,7 +37,7 @@ dependencies: [
 ```swift
 import ALMHelper
 
-class ViewController: UIViewController {
+class SplashViewController: UIViewController {
     func setupAd() {
         Task {
             let adUnits = ALAdUnits(
@@ -106,6 +104,17 @@ class ViewController: UIViewController {
         }
     }
 }
+```
+
+##### Ad display state:
+
+```swift
+enum AdDisplayState {
+    case notReady
+    case failed
+    case showed
+    case hidden
+    case didReward(_ amount: Int)
 ```
 
 ## License
