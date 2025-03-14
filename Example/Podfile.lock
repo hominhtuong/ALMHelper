@@ -1,0 +1,35 @@
+PODS:
+  - ALMHelper (1.0.0):
+    - AppLovinSDK
+    - GoogleUserMessagingPlatform
+    - MiTuKit
+    - SkeletonView
+  - AppLovinSDK (13.1.0)
+  - GoogleUserMessagingPlatform (2.7.0)
+  - MiTuKit (1.0.0)
+  - SkeletonView (1.30.4)
+
+DEPENDENCIES:
+  - ALMHelper (from `../`)
+
+SPEC REPOS:
+  trunk:
+    - AppLovinSDK
+    - GoogleUserMessagingPlatform
+    - MiTuKit
+    - SkeletonView
+
+EXTERNAL SOURCES:
+  ALMHelper:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  ALMHelper: 586ab4df142a5dd6cdc2087be05f3bab6d046069
+  AppLovinSDK: 539a0178d8bef4d68b2551a93526e0c1bba06cb2
+  GoogleUserMessagingPlatform: a8b56893477f67212fbc8411c139e61d463349f5
+  MiTuKit: 4616930df568385534245eb22d550c94c6fcd4ab
+  SkeletonView: 5a050f6411e697abd4cda0a8d767013399dccd69
+
+PODFILE CHECKSUM: 37db18a07e6e6529ddcc5692019eceffe9290db0
+
+COCOAPODS: 1.16.2
