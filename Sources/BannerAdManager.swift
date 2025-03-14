@@ -15,35 +15,42 @@ public class BannerAdManager: NSObject {
     }
 
     public var delegate: ALMHelperDelegate?
-    
+
     private var adUnitId: String?
     private var adView: MAAdView?
     private var shimmerView: UIView?
-    
+
     private var configs: ALMConfiguration {
         return ALMHelper.shared.configs
     }
 
 }
 
-public extension BannerAdManager {
-    func loadBannerAd(parent view: UIView, shimmerColor: UIColor = .lightGray, delegate: MAAdViewAdDelegate? = nil, revenueDelegate: MAAdRevenueDelegate? = nil, almDelegate: ALMHelperDelegate? = nil) {
+extension BannerAdManager {
+    public func loadBannerAd(
+        parent view: UIView,
+        shimmerColor: UIColor = .lightGray,
+        delegate: MAAdViewAdDelegate? = nil,
+        revenueDelegate: MAAdRevenueDelegate? = nil,
+        almDelegate: ALMHelperDelegate? = nil
+    ) {
         guard configs.enableAds else {
             AdLog("BannerAd is not enabled")
             return
         }
+
+        let adUnitId: String? = self.adUnitId ?? ALMHelper.shared.adUnits.bannerAdUnitId
         
-        let adId: String? = self.adUnitId ?? ALMHelper.shared.adUnits.bannerAdUnitId
-        guard let adId = adId else {
+        guard let adId = adUnitId, adId.notNil else {
             AdLog("BannerAd adUnitId is nil")
             return
         }
-        
+
         Queue.main {
             if let delegate = almDelegate {
                 self.delegate = delegate
             }
-            
+
             self.shimmerView = UIView()
             self.shimmerView! >>> view >>> {
                 $0.snp.makeConstraints {
@@ -51,12 +58,13 @@ public extension BannerAdManager {
                 }
                 $0.isSkeletonable = true
                 $0.startSkeletonAnimation()
-                $0.showAnimatedGradientSkeleton(usingGradient: SkeletonGradient(baseColor: shimmerColor))
+                $0.showAnimatedGradientSkeleton(
+                    usingGradient: SkeletonGradient(baseColor: shimmerColor))
             }
-            
+
             self.adView = MAAdView(adUnitIdentifier: adId)
-            guard let adView = self.adView else {return}
-            
+            guard let adView = self.adView else { return }
+
             adView >>> view >>> {
                 $0.snp.makeConstraints {
                     $0.edges.equalToSuperview()
@@ -66,7 +74,7 @@ public extension BannerAdManager {
                 $0.backgroundColor = .clear
                 $0.loadAd()
             }
-            
+
             AdLog("Bannerview loadAd is called")
         }
     }
@@ -87,24 +95,24 @@ extension BannerAdManager: MAAdViewAdDelegate {
     public func didLoad(_ ad: MAAd) {
         AdLog("Bannerview delegate: didLoad")
         delegate?.didLoad(ad)
+
+        if let shimmerView = self.shimmerView {
+            shimmerView.stopSkeletonAnimation()
+            shimmerView.isHidden = true
+        }
     }
 
     public func didFailToLoadAd(
         forAdUnitIdentifier adUnitIdentifier: String, withError error: MAError
     ) {
         AdLog("Bannerview delegate: didFailToLoadAd")
-        delegate?.didFailToLoadAd(forAdUnitIdentifier: adUnitIdentifier, withError: error)
+        delegate?.didFailToLoadAd(
+            forAdUnitIdentifier: adUnitIdentifier, withError: error)
     }
 
     public func didDisplay(_ ad: MAAd) {
         AdLog("Bannerview delegate: didDisplay")
         delegate?.didDisplay(ad)
-        
-        if let shimmerView = self.shimmerView {
-            shimmerView.stopSkeletonAnimation()
-            shimmerView.isHidden = true
-        }
-        
     }
 
     public func didHide(_ ad: MAAd) {
@@ -130,4 +138,3 @@ extension BannerAdManager: MAAdRevenueDelegate {
         delegate?.didPayRevenue(for: ad)
     }
 }
-

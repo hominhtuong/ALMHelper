@@ -11,11 +11,15 @@ import AppLovinSDK
 public class RewardAdManager: NSObject {
     public init(adUnitId: String) {
         self.adUnitId = adUnitId
-        self.rewardAd = MARewardedAd.shared(withAdUnitIdentifier: adUnitId)
+        super.init()
+        
+        if adUnitId.notNil {
+            self.rewardAd = MARewardedAd.shared(withAdUnitIdentifier: adUnitId)
+        }
     }
     
     private let adUnitId: String
-    private let rewardAd: MARewardedAd?
+    private var rewardAd: MARewardedAd?
     private var rewardRetryAttempt = 0.0
     private var completionShowRewardAd: ((AdDisplayState) -> Void)?
     

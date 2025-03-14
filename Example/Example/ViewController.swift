@@ -7,12 +7,14 @@
 
 import ALMHelper
 import MiTuKit
+import AppLovinSDK
 
 class ViewController: UIViewController {
 
     //Variables
     let showAdButton = UIButton()
     let bannerView = UIView()
+    private var bannerAdManager: BannerAdManager!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,13 +24,16 @@ class ViewController: UIViewController {
     }
 
     func setupView() {
+        bannerAdManager = BannerAdManager()
+        bannerAdManager.delegate = self
+        
         bannerView >>> view >>> {
             $0.snp.makeConstraints {
                 $0.leading.trailing.equalToSuperview()
                 $0.bottom.equalTo(botSafe)
                 $0.height.equalTo(50)
             }
-            $0.attachBanner(shimmerColor: .red)
+            $0.attachBanner(bannerAdManager)
         }
 
         showAdButton >>> view >>> {
@@ -38,7 +43,7 @@ class ViewController: UIViewController {
                 $0.height.equalTo(45)
             }
             $0.backgroundColor = .random
-            $0.layer.cornerRadius = 16
+            $0.layer.cornerRadius = 8
             $0.setTitle("Show Ad", for: .normal)
             $0.handle {
                 let random = Int.random(in: 0..<3)
@@ -63,5 +68,19 @@ class ViewController: UIViewController {
 
             }
         }
+    }
+}
+
+extension ViewController: ALMHelperDelegate {
+    func didLoad(_ ad: MAAd) {
+        printDebug("ad: \(ad.adUnitIdentifier) didload")
+    }
+    
+    func didFailToLoadAd(forAdUnitIdentifier adUnitIdentifier: String, withError error: MAError) {
+        printDebug("ad: \(adUnitIdentifier) didFailToLoadAd, withError: \(error.description)")
+    }
+    
+    func didPayRevenue(for ad: MAAd) {
+        printDebug("ad: \(ad.adUnitIdentifier) didPayRevenue")
     }
 }

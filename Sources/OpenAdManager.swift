@@ -10,12 +10,16 @@ import AppLovinSDK
 public class OpenAdManager: NSObject {
     public init(adUnitId: String) {
         self.adUnitId = adUnitId
-        self.appOpenAd = MAAppOpenAd(
-            adUnitIdentifier: adUnitId)
+        super.init()
+        
+        if adUnitId.notNil {
+            self.appOpenAd = MAAppOpenAd(
+                adUnitIdentifier: adUnitId)
+        }
     }
 
     private let adUnitId: String
-    private let appOpenAd: MAAppOpenAd?
+    private var appOpenAd: MAAppOpenAd?
 
     private var openAdRetryAttempt = 0.0
     private var completionShowOpenAds: ((AdDisplayState) -> Void)?

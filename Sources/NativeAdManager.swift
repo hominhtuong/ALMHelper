@@ -8,18 +8,28 @@
 import AppLovinSDK
 
 public class NativeAdManager: NSObject {
-    public init(adUnitId: String, delegate: MANativeAdDelegate? = nil, revenueDelegate: MAAdRevenueDelegate? = nil) {
+    public init(adUnitId: String? = nil, delegate: MANativeAdDelegate? = nil, revenueDelegate: MAAdRevenueDelegate? = nil) {
         self.adUnitId = adUnitId
         super.init()
         
-        self.nativeAdLoader = MANativeAdLoader(adUnitIdentifier: adUnitId)
-        self.nativeAdLoader?.nativeAdDelegate = delegate ?? self
-        self.nativeAdLoader?.revenueDelegate = revenueDelegate ?? self
+        let adId: String? = self.adUnitId ?? ALMHelper.shared.adUnits.nativeAdUnitId
+        
+        if let id = adId, id.notNil {
+            self.nativeAdLoader = MANativeAdLoader(adUnitIdentifier: id)
+            self.nativeAdLoader?.nativeAdDelegate = delegate ?? self
+            self.nativeAdLoader?.revenueDelegate = revenueDelegate ?? self
+            AdLog("NativeAd has been set up")
+        } else {
+            AdLog("NativeAd adUnitId is nil")
+        }
+        
+        
+        
     }
     
     public var delegate: ALMHelperDelegate?
     
-    private let adUnitId: String
+    private var adUnitId: String?
     private var nativeAdLoader: MANativeAdLoader?
     private var nativeAd: MAAd?
     private var nativeAdView: UIView?

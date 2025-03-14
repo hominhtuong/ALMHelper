@@ -226,7 +226,11 @@ extension ALMHelper {
             return
         }
 
-        guard let interstitial = interstitialManager else { return }
+        guard let interstitial = interstitialManager else {
+            AdLog("Interstitial Manager has not been initialized.")
+            return
+        }
+
         let impressionPercentage =
             percent ?? configs.impressionPercentage
         let frequencyCapping =
@@ -244,13 +248,16 @@ extension ALMHelper {
 
         let randomPercent = Int.random(in: 0...99)
         AdLog(
-            "impressionPercentage: \(impressionPercentage), random: \(randomPercent)"
+            "impression percentage: \(impressionPercentage), random: \(randomPercent)"
         )
         if randomPercent < impressionPercentage {
             interstitial.showAds { state in
                 AdLog("Interstitial show state: \(state)")
-                ALMHelper.shared.interstitialLastTime =
-                    Date().timeIntervalSince1970
+                if state == .hidden {
+                    ALMHelper.shared.interstitialLastTime =
+                        Date().timeIntervalSince1970
+                }
+
                 completion?(state)
             }
         } else {
@@ -278,10 +285,17 @@ extension ALMHelper {
             completion?(.notReady)
             return
         }
-        guard let openAdManager = openAdManager else { return }
+
+        guard let openAdManager = openAdManager else {
+            AdLog("OpenAd Manager has not been initialized.")
+            return
+        }
         openAdManager.showAds { state in
             AdLog("OpenAd show state: \(state)")
-            ALMHelper.shared.openAdLastTime = Date().timeIntervalSince1970
+            if state == .hidden {
+                ALMHelper.shared.openAdLastTime = Date().timeIntervalSince1970
+            }
+
             completion?(state)
         }
     }
@@ -293,10 +307,16 @@ extension ALMHelper {
             return
         }
 
-        guard let openAdManager = openAdManager else { return }
+        guard let openAdManager = openAdManager else {
+            AdLog("ResumeAd Manager has not been initialized.")
+            return
+        }
         openAdManager.showAds { state in
             AdLog("ResumeAd show state: \(state)")
-            ALMHelper.shared.openAdLastTime = Date().timeIntervalSince1970
+            if state == .hidden {
+                ALMHelper.shared.openAdLastTime = Date().timeIntervalSince1970
+            }
+
             completion?(state)
         }
     }
@@ -319,10 +339,17 @@ extension ALMHelper {
             return
         }
 
-        guard let rewardManager = rewardManager else { return }
+        guard let rewardManager = rewardManager else {
+            AdLog("RewardAd Manager has not been initialized.")
+            return
+        }
+
         rewardManager.showAds { state in
             AdLog("RewardAd show state: \(state)")
-            ALMHelper.shared.rewardAdLastTime = Date().timeIntervalSince1970
+            if state == .hidden {
+                ALMHelper.shared.rewardAdLastTime = Date().timeIntervalSince1970
+            }
+
             completion?(state)
         }
     }
@@ -349,7 +376,7 @@ extension ALMHelper {
 //MARK: - Banner Ads Utils
 extension UIView {
     public func attachBanner(
-        bannerManager: BannerAdManager? = nil,
+        _ bannerManager: BannerAdManager? = nil,
         shimmerColor: UIColor = .lightGray,
         delegate: ALMHelperDelegate? = nil
     ) {
@@ -360,19 +387,19 @@ extension UIView {
             return
         }
 
-        var bannerView: BannerAdManager?
+        var bannerAd: BannerAdManager?
         if let bannerManager = bannerManager {
-            bannerView = bannerManager
+            bannerAd = bannerManager
         } else if let adId = ALMHelper.shared.adUnits.bannerAdUnitId {
-            bannerView = BannerAdManager(adUnitId: adId)
+            bannerAd = BannerAdManager(adUnitId: adId)
         } else {
             return
         }
 
         if let delegate = delegate {
-            bannerView?.delegate = delegate
+            bannerAd?.delegate = delegate
         }
 
-        bannerView?.loadBannerAd(parent: self, shimmerColor: shimmerColor)
+        bannerAd?.loadBannerAd(parent: self, shimmerColor: shimmerColor)
     }
 }

@@ -11,12 +11,16 @@ import AppLovinSDK
 public class InterstitialManager: NSObject {
     public init(adUnitId: String) {
         self.adUnitId = adUnitId
-        self.interstitialAd = MAInterstitialAd(
-            adUnitIdentifier: adUnitId)
+        super.init()
+        
+        if adUnitId.notNil {
+            self.interstitialAd = MAInterstitialAd(
+                adUnitIdentifier: adUnitId)
+        }
     }
     
     private let adUnitId: String
-    private let interstitialAd: MAInterstitialAd?
+    private var interstitialAd: MAInterstitialAd?
     private var interRetryAttempt = 0.0
     private var completionShowInterstitial: ((AdDisplayState) -> Void)?
     

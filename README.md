@@ -27,7 +27,7 @@ Once you have your Swift package set up, adding ALMHelper as a dependency is as 
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/hominhtuong/ALMHelper.git", .upToNextMajor(from: "1.0.1"))
+    .package(url: "https://github.com/hominhtuong/ALMHelper.git", .upToNextMajor(from: "1.0.2"))
 ]
 ```
 
@@ -48,8 +48,13 @@ class SplashViewController: UIViewController {
                 nativeAdUnitId: AdUnits.nativeAdUnitId
             )
             await ALMHelper.shared.setup(sdkKey: applovinSDKKey, units: adUnits)
-            ALMHelper.shared.loadInterstitial()
             
+            //Load configs online then setup
+            ALMHelper.shared.configs.enableAds = true
+            ALMHelper.shared.configs.showInterstitial = true
+            //...
+            
+            ALMHelper.shared.loadInterstitial()
             //...
         }
     }
