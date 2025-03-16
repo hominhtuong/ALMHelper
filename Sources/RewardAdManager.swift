@@ -2,7 +2,7 @@
 //  RewardAdManager.swift
 //  ALMHelper
 //
-//  Created by Admin on 11/3/25.
+//  Created by Mitu Ultra on 11/3/25.
 //
 
 
@@ -18,6 +18,7 @@ public class RewardAdManager: NSObject {
         }
     }
     
+    private var placement: String = ""
     private let adUnitId: String
     private var rewardAd: MARewardedAd?
     private var rewardRetryAttempt = 0.0
@@ -50,7 +51,7 @@ public extension RewardAdManager {
         AdLog("RewardAd loadAd is called")
     }
 
-    func showAds(_ completion: ((AdDisplayState) -> Void)? = nil) {
+    func showAds(placement: String = "", _ completion: ((AdDisplayState) -> Void)? = nil) {
         guard let rewardAd = self.rewardAd else {
             AdLog("RewardAd has not been initialized.")
             completion?(.notReady)
@@ -63,7 +64,7 @@ public extension RewardAdManager {
             return
         }
         
-        delegate?.rewardAdShowCalled(for: self.adUnitId)
+        delegate?.rewardAdShowCalled(for: self.adUnitId, placement: self.placement)
         completionShowRewardAd = completion
         rewardAd.show()
         AdLog("RewardAd show called")
@@ -114,6 +115,7 @@ extension RewardAdManager: MARewardedAdDelegate {
     public func didDisplay(_ ad: MAAd) {
         AdLog("RewardAd delegate: didDisplay")
         delegate?.didDisplay(ad)
+        delegate?.showRewardAdSuccess(ad, placement: self.placement)
     }
 
     public func didHide(_ ad: MAAd) {
@@ -130,6 +132,7 @@ extension RewardAdManager: MARewardedAdDelegate {
     public func didClick(_ ad: MAAd) {
         AdLog("RewardAd delegate: didClick")
         delegate?.didClick(ad)
+        delegate?.showRewardAdClick(ad, placement: self.placement)
     }
 
     public func didFail(toDisplay ad: MAAd, withError error: MAError) {

@@ -2,7 +2,7 @@
 //  GDPRManager.swift
 //  ALMHelper
 //
-//  Created by Admin on 11/3/25.
+//  Created by Mitu Ultra on 11/3/25.
 //
 
 import Foundation

@@ -27,7 +27,7 @@ Once you have your Swift package set up, adding ALMHelper as a dependency is as 
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/hominhtuong/ALMHelper.git", .upToNextMajor(from: "1.0.2"))
+    .package(url: "https://github.com/hominhtuong/ALMHelper.git", .upToNextMajor(from: "1.0.3"))
 ]
 ```
 
@@ -74,12 +74,17 @@ class ViewController: UIViewController {
         self.navigationController?.pushViewController(NextScreen(), animated: true)
     }
     
+    func showAdThenNextScreen() {
+        ALMHelper.shared.showInterstitial { state in
+            if state == .showed { return } 
+            self.navigationController?.pushViewController(NextScreen(), animated: true)
+        }
+    }
+    
     func showAdAndNextScreen() {
         ALMHelper.shared.showInterstitial { state in
-            if state == .showed {
-            } else {
-                self.navigationController?.pushViewController(NextScreen(), animated: true)
-            }
+            if state == .hidden { return } 
+            self.navigationController?.pushViewController(NextScreen(), animated: false)
         }
     }
 }
@@ -111,7 +116,38 @@ class ViewController: UIViewController {
 }
 ```
 
-##### Ad display state:
+##### Ad Delegate:
+
+```swift
+extension ViewController: ALMHelperDelegate {
+    func didLoad(_ ad: MAAd) {
+        printDebug("ad: \(ad.adUnitIdentifier) didload")
+    }
+    
+    func didFailToLoadAd(forAdUnitIdentifier adUnitIdentifier: String, withError error: MAError) {
+        printDebug("ad: \(adUnitIdentifier) didFailToLoadAd, withError: \(error.description)")
+    }
+    
+    func didPayRevenue(for ad: MAAd) {
+        printDebug("ad: \(ad.adUnitIdentifier) didPayRevenue")
+    }
+    
+    func interstitialAdShowCalled(for adUnitIdentifier: String, placement: String) {
+        printDebug("Add tracking: \(adUnitIdentifier) show called at \(placement)")
+    }
+    
+    func showInterstitialAdSuccess(_ ad: MAAd, placement: String) {
+        printDebug("Add tracking: \(ad.adUnitIdentifier) show success at \(placement)")
+    }
+    
+    func showInterstitialAdClick(_ ad: MAAd, placement: String) {
+        printDebug("Add tracking: \(ad.adUnitIdentifier) show click at \(placement)")
+    }
+}
+```
+
+
+##### Ad Callback display state:
 
 ```swift
 enum AdDisplayState {

@@ -2,7 +2,7 @@
 //  InterstitialManager.swift
 //  ALMHelper
 //
-//  Created by Admin on 11/3/25.
+//  Created by Mitu Ultra on 11/3/25.
 //
 
 
@@ -19,6 +19,7 @@ public class InterstitialManager: NSObject {
         }
     }
     
+    private var placement: String = ""
     private let adUnitId: String
     private var interstitialAd: MAInterstitialAd?
     private var interRetryAttempt = 0.0
@@ -51,7 +52,7 @@ public extension InterstitialManager {
         AdLog("Interstitial loadAd is called")
     }
 
-    func showAds(_ completion: ((AdDisplayState) -> Void)? = nil) {
+    func showAds(placement: String = "", _ completion: ((AdDisplayState) -> Void)? = nil) {
         guard let interstitialAd = self.interstitialAd else {
             AdLog("Interstitial has not been initialized.")
             completion?(.notReady)
@@ -64,7 +65,8 @@ public extension InterstitialManager {
             return
         }
         
-        delegate?.interstitialAdShowCalled(for: adUnitId)
+        self.placement = placement
+        delegate?.interstitialAdShowCalled(for: adUnitId, placement: placement)
         completionShowInterstitial = completion
         interstitialAd.show()
         AdLog("Interstitial show called")
@@ -107,6 +109,7 @@ extension InterstitialManager: MAAdViewAdDelegate {
     public func didDisplay(_ ad: MAAd) {
         AdLog("Interstitial delegate: didDisplay")
         delegate?.didDisplay(ad)
+        delegate?.showInterstitialAdSuccess(ad, placement: self.placement)
         
         completionShowInterstitial?(.showed)
     }
@@ -125,6 +128,7 @@ extension InterstitialManager: MAAdViewAdDelegate {
     public func didClick(_ ad: MAAd) {
         AdLog("Interstitial delegate: didClick")
         delegate?.didClick(ad)
+        delegate?.showInterstitialAdClick(ad, placement: self.placement)
     }
 
     public func didFail(toDisplay ad: MAAd, withError error: MAError) {

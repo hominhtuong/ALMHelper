@@ -2,7 +2,7 @@
 //  ViewController.swift
 //  Example
 //
-//  Created by Admin on 14/3/25.
+//  Created by Mitu Ultra on 14/3/25.
 //
 
 import ALMHelper
@@ -49,17 +49,17 @@ class ViewController: UIViewController {
                 let random = Int.random(in: 0..<3)
                 switch random {
                 case 0:
-                    printDebug("showRewardAd")
+                    printDebug("show RewardAd")
                     ALMHelper.shared.showRewardAd()
                     break
                 case 1:
-                    printDebug("showInterstitial")
+                    printDebug("show Interstitial")
                     ALMHelper.shared.showInterstitial { state in
 
                     }
                     break
                 case 2:
-                    printDebug("showOpenAds")
+                    printDebug("show OpenAd")
                     ALMHelper.shared.showOpenAds()
                     break
                 default:
@@ -82,5 +82,17 @@ extension ViewController: ALMHelperDelegate {
     
     func didPayRevenue(for ad: MAAd) {
         printDebug("ad: \(ad.adUnitIdentifier) didPayRevenue")
+    }
+    
+    func interstitialAdShowCalled(for adUnitIdentifier: String, placement: String) {
+        printDebug("Add tracking: \(adUnitIdentifier) show called at \(placement)")
+    }
+    
+    func showInterstitialAdSuccess(_ ad: MAAd, placement: String) {
+        printDebug("Add tracking: \(ad.adUnitIdentifier) show success at \(placement)")
+    }
+    
+    func showInterstitialAdClick(_ ad: MAAd, placement: String) {
+        printDebug("Add tracking: \(ad.adUnitIdentifier) show click at \(placement)")
     }
 }

@@ -2,7 +2,7 @@
 //  NativeAdManager.swift
 //  ALMHelper
 //
-//  Created by Admin on 14/3/25.
+//  Created by Mitu Ultra on 14/3/25.
 //
 
 import AppLovinSDK
@@ -22,9 +22,6 @@ public class NativeAdManager: NSObject {
         } else {
             AdLog("NativeAd adUnitId is nil")
         }
-        
-        
-        
     }
     
     public var delegate: ALMHelperDelegate?

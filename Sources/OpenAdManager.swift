@@ -2,7 +2,7 @@
 //  OpenAdManager.swift
 //  ALMHelper
 //
-//  Created by Admin on 11/3/25.
+//  Created by Mitu Ultra on 11/3/25.
 //
 
 import AppLovinSDK
@@ -18,6 +18,7 @@ public class OpenAdManager: NSObject {
         }
     }
 
+    private var placement: String = ""
     private let adUnitId: String
     private var appOpenAd: MAAppOpenAd?
 
@@ -51,7 +52,7 @@ extension OpenAdManager {
         AdLog("OpenAd loadAd is called")
     }
 
-    public func showAds(_ completion: ((AdDisplayState) -> Void)? = nil) {
+    public func showAds(placement: String = "", _ completion: ((AdDisplayState) -> Void)? = nil) {
         guard let appOpenAd = self.appOpenAd else {
             AdLog("OpenAd has not been initialized.")
             completion?(.notReady)
@@ -64,7 +65,7 @@ extension OpenAdManager {
             return
         }
 
-        delegate?.openAdShowCalled(for: self.adUnitId)
+        delegate?.openAdShowCalled(for: self.adUnitId, placement: placement)
         completionShowOpenAds = completion
         appOpenAd.show()
         AdLog("OpenAd show called")
@@ -109,6 +110,7 @@ extension OpenAdManager: MAAdViewAdDelegate {
     public func didDisplay(_ ad: MAAd) {
         AdLog("OpenAd delegate: didDisplay")
         delegate?.didDisplay(ad)
+        delegate?.showOpenAdSuccess(ad, placement: self.placement)
 
         completionShowOpenAds?(.showed)
     }
@@ -127,6 +129,7 @@ extension OpenAdManager: MAAdViewAdDelegate {
     public func didClick(_ ad: MAAd) {
         AdLog("OpenAd delegate: didClick")
         delegate?.didClick(ad)
+        delegate?.showOpenAdClick(ad, placement: self.placement)
     }
 
     public func didFail(toDisplay ad: MAAd, withError error: MAError) {
