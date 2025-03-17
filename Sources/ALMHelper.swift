@@ -216,18 +216,19 @@ extension ALMHelper {
     }
 
     public func showInterstitial(
-        percent: Int? = nil, frequencyCapping: Int? = nil,
-        completion: ((AdDisplayState) -> Void)? = nil
+        placement: String = "",
+        percent: Int? = nil,
+        frequencyCapping: Int? = nil,
+        _ completion: ((AdDisplayState) -> Void)? = nil
     ) {
+        guard let interstitial = interstitialManager else {
+            AdLog("Interstitial Manager has not been initialized.")
+            return
+        }
 
         guard configs.enableAds, configs.showInterstitial else {
             AdLog("Interstitial not ready")
             completion?(.notReady)
-            return
-        }
-
-        guard let interstitial = interstitialManager else {
-            AdLog("Interstitial Manager has not been initialized.")
             return
         }
 
@@ -251,7 +252,7 @@ extension ALMHelper {
             "impression percentage: \(impressionPercentage), random: \(randomPercent)"
         )
         if randomPercent < impressionPercentage {
-            interstitial.showAds { state in
+            interstitial.showAds(placement: placement) { state in
                 AdLog("Interstitial show state: \(state)")
                 if state == .hidden {
                     ALMHelper.shared.interstitialLastTime =
@@ -279,18 +280,22 @@ extension ALMHelper {
         openAdManager?.loadAd()
     }
 
-    public func showOpenAds(completion: ((AdDisplayState) -> Void)? = nil) {
+    public func showOpenAds(
+        placement: String = "",
+        _ completion: ((AdDisplayState) -> Void)? = nil
+    ) {
+        guard let openAdManager = openAdManager else {
+            AdLog("OpenAd Manager has not been initialized.")
+            return
+        }
+
         guard configs.enableAds, configs.showAoa else {
             AdLog("OpenAd not ready")
             completion?(.notReady)
             return
         }
 
-        guard let openAdManager = openAdManager else {
-            AdLog("OpenAd Manager has not been initialized.")
-            return
-        }
-        openAdManager.showAds { state in
+        openAdManager.showAds(placement: placement) { state in
             AdLog("OpenAd show state: \(state)")
             if state == .hidden {
                 ALMHelper.shared.openAdLastTime = Date().timeIntervalSince1970
@@ -300,18 +305,22 @@ extension ALMHelper {
         }
     }
 
-    public func showResumeAds(completion: ((AdDisplayState) -> Void)? = nil) {
+    public func showResumeAds(
+        placement: String = "",
+        _ completion: ((AdDisplayState) -> Void)? = nil
+    ) {
+        guard let openAdManager = openAdManager else {
+            AdLog("ResumeAd Manager has not been initialized.")
+            return
+        }
+        
         guard configs.enableAds, configs.showResume else {
             AdLog("ResumeAd not ready")
             completion?(.notReady)
             return
         }
-
-        guard let openAdManager = openAdManager else {
-            AdLog("ResumeAd Manager has not been initialized.")
-            return
-        }
-        openAdManager.showAds { state in
+        
+        openAdManager.showAds(placement: placement) { state in
             AdLog("ResumeAd show state: \(state)")
             if state == .hidden {
                 ALMHelper.shared.openAdLastTime = Date().timeIntervalSince1970
@@ -332,19 +341,22 @@ extension ALMHelper {
         rewardManager?.loadAd()
     }
 
-    public func showRewardAd(completion: ((AdDisplayState) -> Void)? = nil) {
+    public func showRewardAd(
+        placement: String = "",
+        _ completion: ((AdDisplayState) -> Void)? = nil
+    ) {
+        guard let rewardManager = rewardManager else {
+            AdLog("RewardAd Manager has not been initialized.")
+            return
+        }
+
         guard configs.enableAds, configs.showReward else {
             AdLog("RewardAd not ready")
             completion?(.notReady)
             return
         }
 
-        guard let rewardManager = rewardManager else {
-            AdLog("RewardAd Manager has not been initialized.")
-            return
-        }
-
-        rewardManager.showAds { state in
+        rewardManager.showAds(placement: placement) { state in
             AdLog("RewardAd show state: \(state)")
             if state == .hidden {
                 ALMHelper.shared.rewardAdLastTime = Date().timeIntervalSince1970

@@ -69,7 +69,6 @@ import ALMHelper
 
 class ViewController: UIViewController {
     func nextScreen() {
-        
         ALMHelper.shared.showInterstitial()
         self.navigationController?.pushViewController(NextScreen(), animated: true)
     }
@@ -85,6 +84,28 @@ class ViewController: UIViewController {
         ALMHelper.shared.showInterstitial { state in
             if state == .hidden { return } 
             self.navigationController?.pushViewController(NextScreen(), animated: false)
+        }
+    }
+    
+    func showAdWithTrackingPlace() {
+        ALMHelper.shared.showRewardAd(placement: "home_view_controller") { state in
+            switch state {
+            case .failed:
+                printDebug("ad failed")
+                break
+            case .hidden:
+                printDebug("app hidden")
+                break
+            case .notReady:
+                printDebug("ad not ready")
+                break
+            case .didReward(let amount):
+                printDebug("amount: \(amount)")
+                break
+            case .showed:
+                printDebug("ad did display")
+                break
+            }
         }
     }
 }

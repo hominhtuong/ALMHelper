@@ -67,7 +67,12 @@ extension OpenAdManager {
 
         delegate?.openAdShowCalled(for: self.adUnitId, placement: placement)
         completionShowOpenAds = completion
-        appOpenAd.show()
+        
+        if placement.notNil {
+            appOpenAd.show(forPlacement: placement)
+        } else {
+            appOpenAd.show()
+        }
         AdLog("OpenAd show called")
     }
 }

@@ -1,5 +1,5 @@
 PODS:
-  - ALMHelper (1.0.3):
+  - ALMHelper (1.0.4):
     - AppLovinSDK
     - GoogleUserMessagingPlatform
     - MiTuKit
@@ -24,7 +24,7 @@ EXTERNAL SOURCES:
     :path: "../"
 
 SPEC CHECKSUMS:
-  ALMHelper: 967a6e2e577cabc024709e249a2e3b167a96e353
+  ALMHelper: a3d62551b4d78165d57c39ce16f5a0a7e6212745
   AppLovinSDK: 539a0178d8bef4d68b2551a93526e0c1bba06cb2
   GoogleUserMessagingPlatform: a8b56893477f67212fbc8411c139e61d463349f5
   MiTuKit: 4616930df568385534245eb22d550c94c6fcd4ab

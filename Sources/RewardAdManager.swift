@@ -66,7 +66,12 @@ public extension RewardAdManager {
         
         delegate?.rewardAdShowCalled(for: self.adUnitId, placement: self.placement)
         completionShowRewardAd = completion
-        rewardAd.show()
+        
+        if placement.notNil {
+            rewardAd.show(forPlacement: placement)
+        } else {
+            rewardAd.show()
+        }
         AdLog("RewardAd show called")
     }
 }

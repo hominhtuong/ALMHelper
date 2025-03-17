@@ -68,7 +68,12 @@ public extension InterstitialManager {
         self.placement = placement
         delegate?.interstitialAdShowCalled(for: adUnitId, placement: placement)
         completionShowInterstitial = completion
-        interstitialAd.show()
+        
+        if placement.notNil {
+            interstitialAd.show(forPlacement: placement)
+        } else {
+            interstitialAd.show()
+        }
         AdLog("Interstitial show called")
     }
 }
