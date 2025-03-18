@@ -7,39 +7,30 @@
 
 
 import AppLovinSDK
+import MiTuKit
 
-public class InterstitialManager: NSObject {
-    public init(adUnitId: String) {
-        self.adUnitId = adUnitId
-        super.init()
-        
-        if adUnitId.notNil {
-            self.interstitialAd = MAInterstitialAd(
-                adUnitIdentifier: adUnitId)
+public class InterstitialManager: ALMBaseAd {
+    public override init(adUnitId: String) {
+        guard !adUnitId.isEmpty else {
+            fatalError("adUnitId cannot be empty.")
         }
+        
+        self.interstitialAd = MAInterstitialAd(adUnitIdentifier: adUnitId)
+        
+        super.init(adUnitId: adUnitId)
     }
     
-    private var placement: String = ""
-    private let adUnitId: String
-    private var interstitialAd: MAInterstitialAd?
-    private var interRetryAttempt = 0.0
-    private var completionShowInterstitial: ((AdDisplayState) -> Void)?
-    
-    var delegate: ALMHelperDelegate?
-    
-    private var configs: ALMConfiguration {
-        return ALMHelper.shared.configs
+    public override var isAdReady: Bool {
+        return interstitialAd.isReady
     }
+    
+    private let interstitialAd: MAInterstitialAd
+
 }
 
-public extension InterstitialManager {
-    func loadAd() {
-        guard let interstitialAd = self.interstitialAd else {
-            AdLog("Interstitial has not been initialized.")
-            return
-        }
-        
-        if interstitialAd.isReady {
+extension InterstitialManager {
+    public override func loadAd() {
+        if isAdReady {
             AdLog("Interstitial isReady")
             return
         }
@@ -52,14 +43,8 @@ public extension InterstitialManager {
         AdLog("Interstitial loadAd is called")
     }
 
-    func showAds(placement: String = "", _ completion: ((AdDisplayState) -> Void)? = nil) {
-        guard let interstitialAd = self.interstitialAd else {
-            AdLog("Interstitial has not been initialized.")
-            completion?(.notReady)
-            return
-        }
-        
-        if !interstitialAd.isReady  {
+    public override func showAds(placement: String = "", _ completion: ((AdDisplayState) -> Void)? = nil) {
+        if !isAdReady  {
             AdLog("Interstitial not ready")
             completion?(.notReady)
             return
@@ -67,14 +52,15 @@ public extension InterstitialManager {
         
         self.placement = placement
         delegate?.interstitialAdShowCalled(for: adUnitId, placement: placement)
-        completionShowInterstitial = completion
+        adCompletionHandle = completion
         
-        if placement.notNil {
-            interstitialAd.show(forPlacement: placement)
-        } else {
+        if placement.isEmpty {
+            AdLog("Interstitial show called")
             interstitialAd.show()
+        } else {
+            AdLog("Interstitial show called with placement: \(placement)")
+            interstitialAd.show(forPlacement: placement)
         }
-        AdLog("Interstitial show called")
     }
 }
 
@@ -92,7 +78,7 @@ extension InterstitialManager: MAAdViewAdDelegate {
     public func didLoad(_ ad: MAAd) {
         AdLog("Interstitial delegate: didLoad")
         delegate?.didLoad(ad)
-        interRetryAttempt = 0
+        retryAttempt = 0
     }
 
     public func didFailToLoadAd(
@@ -102,11 +88,11 @@ extension InterstitialManager: MAAdViewAdDelegate {
         delegate?.didFailToLoadAd(forAdUnitIdentifier: adUnitIdentifier, withError: error)
 
         if configs.retryAfterFailed {
-            interRetryAttempt += 1
-            let delaySec = pow(2.0, min(6.0, interRetryAttempt))
+            retryAttempt += 1
+            let delaySec = pow(2.0, min(6.0, retryAttempt))
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + delaySec) {
-                self.loadAd()
+            DispatchQueue.main.asyncAfter(deadline: .now() + delaySec) { [weak self] in
+                self?.loadAd()
             }
         }
     }
@@ -116,14 +102,15 @@ extension InterstitialManager: MAAdViewAdDelegate {
         delegate?.didDisplay(ad)
         delegate?.showInterstitialAdSuccess(ad, placement: self.placement)
         
-        completionShowInterstitial?(.showed)
+        adCompletionHandle?(.showed)
     }
 
     public func didHide(_ ad: MAAd) {
         AdLog("Interstitial delegate: didHide")
         delegate?.didHide(ad)
         
-        completionShowInterstitial?(.hidden)
+        adCompletionHandle?(.hidden)
+        adCompletionHandle = nil
         
         if configs.loadAdAfterShowed {
             self.loadAd()
@@ -140,12 +127,11 @@ extension InterstitialManager: MAAdViewAdDelegate {
         AdLog("Interstitial delegate: didFail to Display: \(error.description)")
         delegate?.didFail(toDisplay: ad, withError: error)
         
-        completionShowInterstitial?(.failed)
+        adCompletionHandle?(.failed)
         
         if configs.loadAdAfterShowed {
             loadAd()
         }
-        
     }
 }
 
@@ -157,5 +143,4 @@ extension InterstitialManager: MAAdRevenueDelegate {
         delegate?.didPayRevenue(for: ad)
 
     }
-
 }

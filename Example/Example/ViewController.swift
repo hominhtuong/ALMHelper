@@ -50,8 +50,13 @@ class ViewController: UIViewController {
                 switch random {
                 case 0:
                     printDebug("show RewardAd")
-                    ALMHelper.shared.showRewardAd(placement: "home_view_controller") { state in
-                        switch state {
+                    ALMHelper.shared.showRewardAd(placement: "home_view_controller") { adState in
+                        if adState.isReward {
+                            printDebug("Reward received: \(adState.rewardAmount)")
+                            return
+                        }
+                        
+                        switch adState {
                         case .failed:
                             printDebug("ad failed")
                             break
@@ -61,18 +66,17 @@ class ViewController: UIViewController {
                         case .notReady:
                             printDebug("ad not ready")
                             break
-                        case .didReward(let amount):
-                            printDebug("amount: \(amount)")
-                            break
                         case .showed:
                             printDebug("ad did display")
+                            break
+                        default:
                             break
                         }
                     }
                     break
                 case 1:
                     printDebug("show Interstitial")
-                    ALMHelper.shared.showInterstitial { state in
+                    ALMHelper.shared.showInterstitial { adState in
 
                     }
                     break

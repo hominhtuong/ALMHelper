@@ -27,7 +27,7 @@ Once you have your Swift package set up, adding ALMHelper as a dependency is as 
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/hominhtuong/ALMHelper.git", .upToNextMajor(from: "1.0.3"))
+    .package(url: "https://github.com/hominhtuong/ALMHelper.git", .upToNextMajor(from: "1.0.5"))
 ]
 ```
 
@@ -88,25 +88,29 @@ class ViewController: UIViewController {
     }
     
     func showAdWithTrackingPlace() {
-        ALMHelper.shared.showRewardAd(placement: "home_view_controller") { state in
-            switch state {
-            case .failed:
-                printDebug("ad failed")
-                break
-            case .hidden:
-                printDebug("app hidden")
-                break
-            case .notReady:
-                printDebug("ad not ready")
-                break
-            case .didReward(let amount):
-                printDebug("amount: \(amount)")
-                break
-            case .showed:
-                printDebug("ad did display")
-                break
+        ALMHelper.shared.showRewardAd(placement: "home_view_controller") { adState in
+            if adState.isReward {
+                printDebug("Reward received: \(adState.rewardAmount)")
+                return
             }
-        }
+                        
+            switch adState {
+                case .failed:
+                    printDebug("ad failed")
+                    break
+                case .hidden:
+                    printDebug("app hidden")
+                    break
+                case .notReady:
+                    printDebug("ad not ready")
+                    break
+                case .showed:
+                    printDebug("ad did display")
+                    break
+                default:
+                    break
+                }
+         }
     }
 }
 ```
@@ -165,18 +169,6 @@ extension ViewController: ALMHelperDelegate {
         printDebug("Add tracking: \(ad.adUnitIdentifier) show click at \(placement)")
     }
 }
-```
-
-
-##### Ad Callback display state:
-
-```swift
-enum AdDisplayState {
-    case notReady
-    case failed
-    case showed
-    case hidden
-    case didReward(_ amount: Int)
 ```
 
 ## License

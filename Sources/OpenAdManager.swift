@@ -6,40 +6,28 @@
 //
 
 import AppLovinSDK
+import MiTuKit
 
-public class OpenAdManager: NSObject {
-    public init(adUnitId: String) {
-        self.adUnitId = adUnitId
-        super.init()
-        
-        if adUnitId.notNil {
-            self.appOpenAd = MAAppOpenAd(
-                adUnitIdentifier: adUnitId)
+public class OpenAdManager: ALMBaseAd {
+    public override init(adUnitId: String) {
+        guard !adUnitId.isEmpty else {
+            fatalError("adUnitId cannot be empty.")
         }
+        self.appOpenAd = MAAppOpenAd(adUnitIdentifier: adUnitId)
+        
+        super.init(adUnitId: adUnitId)
     }
-
-    private var placement: String = ""
-    private let adUnitId: String
-    private var appOpenAd: MAAppOpenAd?
-
-    private var openAdRetryAttempt = 0.0
-    private var completionShowOpenAds: ((AdDisplayState) -> Void)?
-
-    var delegate: ALMHelperDelegate?
-
-    private var configs: ALMConfiguration {
-        return ALMHelper.shared.configs
+    
+    public override var isAdReady: Bool {
+        return appOpenAd.isReady
     }
+    
+    private let appOpenAd: MAAppOpenAd
 }
 
 extension OpenAdManager {
-    public func loadAd() {
-        guard let appOpenAd = self.appOpenAd else {
-            AdLog("OpenAd has not been initialized.")
-            return
-        }
-
-        if appOpenAd.isReady {
+    public override func loadAd() {
+        if isAdReady {
             AdLog("OpenAd isReady")
             return
         }
@@ -52,28 +40,23 @@ extension OpenAdManager {
         AdLog("OpenAd loadAd is called")
     }
 
-    public func showAds(placement: String = "", _ completion: ((AdDisplayState) -> Void)? = nil) {
-        guard let appOpenAd = self.appOpenAd else {
-            AdLog("OpenAd has not been initialized.")
-            completion?(.notReady)
-            return
-        }
-
-        if !appOpenAd.isReady {
+    public override func showAds(placement: String = "", _ completion: ((AdDisplayState) -> Void)? = nil) {
+        if !isAdReady {
             AdLog("OpenAd not ready")
             completion?(.notReady)
             return
         }
 
-        delegate?.openAdShowCalled(for: self.adUnitId, placement: placement)
-        completionShowOpenAds = completion
+        delegate?.openAdShowCalled(for: adUnitId, placement: placement)
+        adCompletionHandle = completion
         
-        if placement.notNil {
-            appOpenAd.show(forPlacement: placement)
-        } else {
+        if placement.isEmpty {
+            AdLog("OpenAd show called")
             appOpenAd.show()
+        } else {
+            AdLog("OpenAd show called with placement: \(placement)")
+            appOpenAd.show(forPlacement: placement)
         }
-        AdLog("OpenAd show called")
     }
 }
 
@@ -92,7 +75,7 @@ extension OpenAdManager: MAAdViewAdDelegate {
         AdLog("OpenAd delegate: didLoad")
         delegate?.didLoad(ad)
 
-        openAdRetryAttempt = 0
+        retryAttempt = 0
     }
 
     public func didFailToLoadAd(
@@ -103,11 +86,11 @@ extension OpenAdManager: MAAdViewAdDelegate {
             forAdUnitIdentifier: adUnitIdentifier, withError: error)
 
         if configs.retryAfterFailed {
-            openAdRetryAttempt += 1
-            let delaySec = pow(2.0, min(6.0, openAdRetryAttempt))
+            retryAttempt += 1
+            let delaySec = pow(2.0, min(6.0, retryAttempt))
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + delaySec) {
-                self.loadAd()
+            DispatchQueue.main.asyncAfter(deadline: .now() + delaySec) { [weak self] in
+                self?.loadAd()
             }
         }
     }
@@ -117,14 +100,15 @@ extension OpenAdManager: MAAdViewAdDelegate {
         delegate?.didDisplay(ad)
         delegate?.showOpenAdSuccess(ad, placement: self.placement)
 
-        completionShowOpenAds?(.showed)
+        adCompletionHandle?(.showed)
     }
 
     public func didHide(_ ad: MAAd) {
         AdLog("OpenAd delegate: didHide")
         delegate?.didHide(ad)
 
-        completionShowOpenAds?(.hidden)
+        adCompletionHandle?(.hidden)
+        adCompletionHandle = nil
 
         if configs.loadAdAfterShowed {
             loadAd()
@@ -141,7 +125,8 @@ extension OpenAdManager: MAAdViewAdDelegate {
         AdLog("OpenAd delegate: didFail, error: \(error.description)")
         delegate?.didFail(toDisplay: ad, withError: error)
 
-        completionShowOpenAds?(.failed)
+        adCompletionHandle?(.failed)
+        adCompletionHandle = nil
 
         if configs.loadAdAfterShowed {
             loadAd()

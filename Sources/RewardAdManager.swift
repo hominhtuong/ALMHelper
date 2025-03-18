@@ -7,38 +7,28 @@
 
 
 import AppLovinSDK
+import MiTuKit
 
-public class RewardAdManager: NSObject {
-    public init(adUnitId: String) {
-        self.adUnitId = adUnitId
-        super.init()
-        
-        if adUnitId.notNil {
-            self.rewardAd = MARewardedAd.shared(withAdUnitIdentifier: adUnitId)
+public class RewardAdManager: ALMBaseAd {
+    public override init(adUnitId: String) {
+        guard !adUnitId.isEmpty else {
+            fatalError("adUnitId cannot be empty.")
         }
+        self.rewardAd = MARewardedAd.shared(withAdUnitIdentifier: adUnitId)
+        
+        super.init(adUnitId: adUnitId)
     }
     
-    private var placement: String = ""
-    private let adUnitId: String
-    private var rewardAd: MARewardedAd?
-    private var rewardRetryAttempt = 0.0
-    private var completionShowRewardAd: ((AdDisplayState) -> Void)?
-    
-    var delegate: ALMHelperDelegate?
-    
-    private var configs: ALMConfiguration {
-        return ALMHelper.shared.configs
+    public override var isAdReady: Bool {
+        return rewardAd.isReady
     }
+    
+    private let rewardAd: MARewardedAd
 }
 
-public extension RewardAdManager {
-    func loadAd() {
-        guard let rewardAd = self.rewardAd else {
-            AdLog("RewardAd has not been initialized.")
-            return
-        }
-        
-        if rewardAd.isReady {
+extension RewardAdManager {
+    public override func loadAd() {
+        if isAdReady {
             AdLog("RewardAd isReady")
             return
         }
@@ -51,28 +41,23 @@ public extension RewardAdManager {
         AdLog("RewardAd loadAd is called")
     }
 
-    func showAds(placement: String = "", _ completion: ((AdDisplayState) -> Void)? = nil) {
-        guard let rewardAd = self.rewardAd else {
-            AdLog("RewardAd has not been initialized.")
-            completion?(.notReady)
-            return
-        }
-        
-        if !rewardAd.isReady  {
+    public override func showAds(placement: String = "", _ completion: ((AdDisplayState) -> Void)? = nil) {
+        if !isAdReady  {
             AdLog("RewardAd not ready")
             completion?(.notReady)
             return
         }
         
         delegate?.rewardAdShowCalled(for: self.adUnitId, placement: self.placement)
-        completionShowRewardAd = completion
+        adCompletionHandle = completion
         
-        if placement.notNil {
-            rewardAd.show(forPlacement: placement)
-        } else {
+        if placement.isEmpty {
+            AdLog("RewardAd show called")
             rewardAd.show()
+        } else {
+            AdLog("RewardAd show called with placement: \(placement)")
+            rewardAd.show(forPlacement: placement)
         }
-        AdLog("RewardAd show called")
     }
 }
 
@@ -81,7 +66,7 @@ extension RewardAdManager: MARewardedAdDelegate {
         AdLog("RewardAd delegate: didRewardUser, reward: \(reward.amount)")
         delegate?.didRewardUser(for: ad, with: reward)
         
-        completionShowRewardAd?(.didReward(reward.amount))
+        adCompletionHandle?(.didReward(reward.amount))
     }
     
     public func didExpand(_ ad: MAAd) {
@@ -98,7 +83,7 @@ extension RewardAdManager: MARewardedAdDelegate {
         AdLog("RewardAd delegate: didLoad")
         delegate?.didLoad(ad)
         
-        rewardRetryAttempt = 0
+        retryAttempt = 0
     }
 
     public func didFailToLoadAd(
@@ -108,11 +93,11 @@ extension RewardAdManager: MARewardedAdDelegate {
         delegate?.didFailToLoadAd(forAdUnitIdentifier: adUnitIdentifier, withError: error)
 
         if configs.retryAfterFailed {
-            rewardRetryAttempt += 1
-            let delaySec = pow(2.0, min(6.0, rewardRetryAttempt))
+            retryAttempt += 1
+            let delaySec = pow(2.0, min(6.0, retryAttempt))
 
-            DispatchQueue.main.asyncAfter(deadline: .now() + delaySec) {
-                self.loadAd()
+            DispatchQueue.main.asyncAfter(deadline: .now() + delaySec) { [weak self] in
+                self?.loadAd()
             }
         }
     }
@@ -127,7 +112,8 @@ extension RewardAdManager: MARewardedAdDelegate {
         AdLog("RewardAd delegate: didHide")
         delegate?.didHide(ad)
         
-        completionShowRewardAd?(.hidden)
+        adCompletionHandle?(.hidden)
+        adCompletionHandle = nil
         
         if configs.loadAdAfterShowed {
             loadAd()
@@ -144,7 +130,8 @@ extension RewardAdManager: MARewardedAdDelegate {
         AdLog("RewardAd delegate: didFail, error: \(error.description)")
         delegate?.didFail(toDisplay: ad, withError: error)
         
-        completionShowRewardAd?(.failed)
+        adCompletionHandle?(.failed)
+        adCompletionHandle = nil
         
         if configs.loadAdAfterShowed {
             loadAd()

@@ -16,7 +16,7 @@ public class ALMHelper: NSObject {
 
     //Interstitial
     private var interstitialLastTime: TimeInterval = 0
-
+    
     public var interstitialManager: InterstitialManager?
     public var interstitialDelegate: ALMHelperDelegate? {
         get {

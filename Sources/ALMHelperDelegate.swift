@@ -7,7 +7,7 @@
 
 import AppLovinSDK
 
-public protocol ALMHelperDelegate {
+public protocol ALMHelperDelegate: AnyObject {
     func interstitialAdLoadCalled(for adUnitIdentifier: String)
     func rewardAdLoadCalled(for adUnitIdentifier: String)
     func openAdLoadCalled(for adUnitIdentifier: String)
