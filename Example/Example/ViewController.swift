@@ -55,7 +55,6 @@ class ViewController: UIViewController {
                             printDebug("Reward received: \(adState.rewardAmount)")
                             return
                         }
-                        
                         switch adState {
                         case .failed:
                             printDebug("ad failed")

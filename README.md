@@ -27,7 +27,7 @@ Once you have your Swift package set up, adding ALMHelper as a dependency is as 
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/hominhtuong/ALMHelper.git", .upToNextMajor(from: "1.0.5"))
+    .package(url: "https://github.com/hominhtuong/ALMHelper.git", .upToNextMajor(from: "1.0.6"))
 ]
 ```
 

@@ -12,6 +12,9 @@ public class ALMConfiguration {
     ///default is 100% - alway show
     public var impressionPercentage: Int = 100
     
+    /// Time between Open and Interstitial
+    public var timeBetweenAds: Int = 5
+    
     public var enableAds = true
     public var showAoa = true
     public var showResume = true

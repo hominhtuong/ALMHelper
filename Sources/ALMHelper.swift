@@ -231,13 +231,24 @@ extension ALMHelper {
             completion?(.notReady)
             return
         }
-
+        
+        let date = Date().timeIntervalSince1970
+        
+        let timeBetweenAds = date - ALMHelper.shared.openAdLastTime
+        if timeBetweenAds < configs.timeBetweenAds.toDouble {
+            AdLog("Interstitial time between ads: \(timeBetweenAds)")
+            if let completion = completion {
+                completion(.notReady)
+            }
+            return
+        }
+        
         let impressionPercentage =
             percent ?? configs.impressionPercentage
         let frequencyCapping =
             frequencyCapping ?? configs.frequencyCapping
 
-        let date = Date().timeIntervalSince1970
+        
         let diff = date - ALMHelper.shared.interstitialLastTime
         if diff < frequencyCapping.toDouble {
             AdLog("Interstitial frequency capping: \(diff)")
@@ -294,6 +305,17 @@ extension ALMHelper {
             completion?(.notReady)
             return
         }
+        
+        let date = Date().timeIntervalSince1970
+        let timeBetweenAds = date - ALMHelper.shared.interstitialLastTime
+        
+        if timeBetweenAds < configs.timeBetweenAds.toDouble {
+            AdLog("OpenAd time between ads: \(timeBetweenAds)")
+            if let completion = completion {
+                completion(.notReady)
+            }
+            return
+        }
 
         openAdManager.showAds(placement: placement) { state in
             AdLog("OpenAd show state: \(state)")
@@ -317,6 +339,17 @@ extension ALMHelper {
         guard configs.enableAds, configs.showResume else {
             AdLog("ResumeAd not ready")
             completion?(.notReady)
+            return
+        }
+        
+        let date = Date().timeIntervalSince1970
+        let timeBetweenAds = date - ALMHelper.shared.interstitialLastTime
+        
+        if timeBetweenAds < configs.timeBetweenAds.toDouble {
+            AdLog("OpenAd time between ads: \(timeBetweenAds)")
+            if let completion = completion {
+                completion(.notReady)
+            }
             return
         }
         
