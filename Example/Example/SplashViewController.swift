@@ -81,6 +81,7 @@ extension SplashViewController {
             //Load configs online then setup
             ALMHelper.shared.configs.enableAds = true
             ALMHelper.shared.configs.showInterstitial = true
+            ALMHelper.shared.configs.orientation = .portrait
             //...
             
             ALMHelper.shared.loadInterstitial()

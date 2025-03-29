@@ -29,6 +29,7 @@ public class BannerAdManager: NSObject {
 extension BannerAdManager {
     public func loadBannerAd(
         parent view: UIView,
+        placement: String? = nil,
         shimmerColor: UIColor = .lightGray,
         delegate: MAAdViewAdDelegate? = nil,
         revenueDelegate: MAAdRevenueDelegate? = nil,
@@ -73,6 +74,7 @@ extension BannerAdManager {
                 $0.revenueDelegate = revenueDelegate ?? self
                 $0.backgroundColor = .clear
                 $0.loadAd()
+                $0.placement = placement
             }
 
             AdLog("Bannerview loadAd is called")

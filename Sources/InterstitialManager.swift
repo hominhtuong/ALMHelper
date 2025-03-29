@@ -35,6 +35,14 @@ extension InterstitialManager {
             return
         }
         
+        if configs.forceOrientationAd {
+            let deviceOrientation = UIDevice.current.orientation
+            if configs.orientation != deviceOrientation {
+                AdLog("Interstitial load failed - Orientation Mismatch, orientation config: \(configs.orientation), device: \(deviceOrientation)")
+                return
+            }
+        }
+        
         interstitialAd.delegate = self
         interstitialAd.revenueDelegate = self
 
@@ -48,6 +56,15 @@ extension InterstitialManager {
             AdLog("Interstitial not ready")
             completion?(.notReady)
             return
+        }
+        
+        if configs.forceOrientationAd {
+            let deviceOrientation = UIDevice.current.orientation
+            if configs.orientation != deviceOrientation {
+                AdLog("Interstitial show failed - Orientation Mismatch, orientation config: \(configs.orientation), device: \(deviceOrientation)")
+                completion?(.notReady)
+                return
+            }
         }
         
         self.placement = placement

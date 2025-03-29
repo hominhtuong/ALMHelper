@@ -5,6 +5,8 @@
 //  Created by Mitu Ultra on 11/3/25.
 //
 
+import UIKit
+
 public class ALMConfiguration {
     ///default is 0 - alway request ads
     public var frequencyCapping: Int = 0
@@ -24,5 +26,8 @@ public class ALMConfiguration {
     public var retryAfterFailed: Bool = true
     public var loadAdAfterShowed: Bool = true
     public var loadNativeAfterExpire: Bool = true
+    
+    public var forceOrientationAd: Bool = true
+    public var orientation: UIDeviceOrientation = .portrait
 }
 

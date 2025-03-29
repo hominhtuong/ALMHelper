@@ -31,6 +31,14 @@ extension OpenAdManager {
             AdLog("OpenAd isReady")
             return
         }
+        
+        if configs.forceOrientationAd {
+            let deviceOrientation = UIDevice.current.orientation
+            if configs.orientation != deviceOrientation {
+                AdLog("OpenAd load failed - Orientation Mismatch, orientation config: \(configs.orientation), device: \(deviceOrientation)")
+                return
+            }
+        }
 
         appOpenAd.delegate = self
         appOpenAd.revenueDelegate = self
@@ -47,6 +55,14 @@ extension OpenAdManager {
             return
         }
 
+        if configs.forceOrientationAd {
+            let deviceOrientation = UIDevice.current.orientation
+            if configs.orientation != deviceOrientation {
+                AdLog("OpenAd show failed - Orientation Mismatch, orientation config: \(configs.orientation), device: \(deviceOrientation)")
+                return
+            }
+        }
+        
         delegate?.openAdShowCalled(for: adUnitId, placement: placement)
         adCompletionHandle = completion
         

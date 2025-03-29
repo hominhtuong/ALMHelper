@@ -422,6 +422,7 @@ extension ALMHelper {
 extension UIView {
     public func attachBanner(
         _ bannerManager: BannerAdManager? = nil,
+        placement: String? = nil,
         shimmerColor: UIColor = .lightGray,
         delegate: ALMHelperDelegate? = nil
     ) {
@@ -445,6 +446,6 @@ extension UIView {
             bannerAd?.delegate = delegate
         }
 
-        bannerAd?.loadBannerAd(parent: self, shimmerColor: shimmerColor)
+        bannerAd?.loadBannerAd(parent: self, placement: placement, shimmerColor: shimmerColor)
     }
 }

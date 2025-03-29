@@ -33,7 +33,8 @@ class ViewController: UIViewController {
                 $0.bottom.equalTo(botSafe)
                 $0.height.equalTo(50)
             }
-            $0.attachBanner(bannerAdManager)
+            $0.attachBanner(bannerAdManager,
+                            placement: "MainBanner")
         }
 
         showAdButton >>> view >>> {
