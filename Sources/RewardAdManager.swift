@@ -34,7 +34,7 @@ extension RewardAdManager {
         }
         
         if configs.forceOrientationAd {
-            let deviceOrientation = UIDevice.current.orientation
+            let deviceOrientation = ALDeviceOrientation.current
             if configs.orientation != deviceOrientation {
                 AdLog("RewardAd load failed - Orientation Mismatch, orientation config: \(configs.orientation), device: \(deviceOrientation)")
                 return
@@ -57,7 +57,7 @@ extension RewardAdManager {
         }
         
         if configs.forceOrientationAd {
-            let deviceOrientation = UIDevice.current.orientation
+            let deviceOrientation = ALDeviceOrientation.current
             if configs.orientation != deviceOrientation {
                 AdLog("RewardAd show failed - Orientation Mismatch, orientation config: \(configs.orientation), device: \(deviceOrientation)")
                 return

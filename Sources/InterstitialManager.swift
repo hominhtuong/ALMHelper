@@ -36,7 +36,7 @@ extension InterstitialManager {
         }
         
         if configs.forceOrientationAd {
-            let deviceOrientation = UIDevice.current.orientation
+            let deviceOrientation = ALDeviceOrientation.current
             if configs.orientation != deviceOrientation {
                 AdLog("Interstitial load failed - Orientation Mismatch, orientation config: \(configs.orientation), device: \(deviceOrientation)")
                 return
@@ -59,7 +59,7 @@ extension InterstitialManager {
         }
         
         if configs.forceOrientationAd {
-            let deviceOrientation = UIDevice.current.orientation
+            let deviceOrientation = ALDeviceOrientation.current
             if configs.orientation != deviceOrientation {
                 AdLog("Interstitial show failed - Orientation Mismatch, orientation config: \(configs.orientation), device: \(deviceOrientation)")
                 completion?(.notReady)
