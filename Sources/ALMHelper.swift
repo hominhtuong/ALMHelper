@@ -16,7 +16,7 @@ public class ALMHelper: NSObject {
 
     //Interstitial
     private var interstitialLastTime: TimeInterval = 0
-    
+
     public var interstitialManager: InterstitialManager?
     public var interstitialDelegate: ALMHelperDelegate? {
         get {
@@ -156,7 +156,9 @@ extension ALMHelper {
         privacyPolicyURL: String?,
         termsOfServiceURL: String?,
         debugUserGeography: Bool,
-        isVerboseLoggingEnabled: Bool
+        isVerboseLoggingEnabled: Bool,
+        showMediationDebugger: Bool,
+        showCreativeDebugger: Bool
     ) async {
         let settings = ALSdk.shared().settings
 
@@ -174,17 +176,23 @@ extension ALMHelper {
 
         }
 
-        if debugUserGeography {
-            #if DEBUG
+        #if DEBUG
+
+            if debugUserGeography {
                 settings.termsAndPrivacyPolicyFlowSettings.debugUserGeography =
                     .GDPR
-            #endif
-        }
+            }
 
-        #if DEBUG
             settings.isVerboseLoggingEnabled = isVerboseLoggingEnabled
-        #endif
 
+            if showMediationDebugger {
+                ALSdk.shared().showMediationDebugger()
+            }
+
+            if showCreativeDebugger {
+                ALSdk.shared().showCreativeDebugger()
+            }
+        #endif
     }
 
     public func setup(
@@ -193,7 +201,9 @@ extension ALMHelper {
         privacyPolicyURL: String? = nil,
         termsOfServiceURL: String? = nil,
         debugUserGeography: Bool = true,
-        isVerboseLoggingEnabled: Bool = false
+        isVerboseLoggingEnabled: Bool = false,
+        showMediationDebugger: Bool = false,
+        showCreativeDebugger: Bool = false
     ) async {
         await setupUnits(units: units)
         await initAd(sdkKey: sdkKey)
@@ -201,7 +211,10 @@ extension ALMHelper {
             privacyPolicyURL: privacyPolicyURL,
             termsOfServiceURL: termsOfServiceURL,
             debugUserGeography: debugUserGeography,
-            isVerboseLoggingEnabled: isVerboseLoggingEnabled)
+            isVerboseLoggingEnabled: isVerboseLoggingEnabled,
+            showMediationDebugger: showMediationDebugger,
+            showCreativeDebugger: showCreativeDebugger
+        )
     }
 }
 
@@ -231,9 +244,9 @@ extension ALMHelper {
             completion?(.notReady)
             return
         }
-        
+
         let date = Date().timeIntervalSince1970
-        
+
         let timeBetweenAds = date - ALMHelper.shared.openAdLastTime
         if timeBetweenAds < configs.timeBetweenAds.toDouble {
             AdLog("Interstitial time between ads: \(timeBetweenAds)")
@@ -242,13 +255,12 @@ extension ALMHelper {
             }
             return
         }
-        
+
         let impressionPercentage =
             percent ?? configs.impressionPercentage
         let frequencyCapping =
             frequencyCapping ?? configs.frequencyCapping
 
-        
         let diff = date - ALMHelper.shared.interstitialLastTime
         if diff < frequencyCapping.toDouble {
             AdLog("Interstitial frequency capping: \(diff)")
@@ -305,10 +317,10 @@ extension ALMHelper {
             completion?(.notReady)
             return
         }
-        
+
         let date = Date().timeIntervalSince1970
         let timeBetweenAds = date - ALMHelper.shared.interstitialLastTime
-        
+
         if timeBetweenAds < configs.timeBetweenAds.toDouble {
             AdLog("OpenAd time between ads: \(timeBetweenAds)")
             if let completion = completion {
@@ -335,16 +347,16 @@ extension ALMHelper {
             AdLog("ResumeAd Manager has not been initialized.")
             return
         }
-        
+
         guard configs.enableAds, configs.showResume else {
             AdLog("ResumeAd not ready")
             completion?(.notReady)
             return
         }
-        
+
         let date = Date().timeIntervalSince1970
         let timeBetweenAds = date - ALMHelper.shared.interstitialLastTime
-        
+
         if timeBetweenAds < configs.timeBetweenAds.toDouble {
             AdLog("OpenAd time between ads: \(timeBetweenAds)")
             if let completion = completion {
@@ -352,7 +364,7 @@ extension ALMHelper {
             }
             return
         }
-        
+
         openAdManager.showAds(placement: placement) { state in
             AdLog("ResumeAd show state: \(state)")
             if state == .hidden {
@@ -446,6 +458,7 @@ extension UIView {
             bannerAd?.delegate = delegate
         }
 
-        bannerAd?.loadBannerAd(parent: self, placement: placement, shimmerColor: shimmerColor)
+        bannerAd?.loadBannerAd(
+            parent: self, placement: placement, shimmerColor: shimmerColor)
     }
 }

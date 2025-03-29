@@ -11,6 +11,7 @@ import MiTuKit
 import AppTrackingTransparency
 import AdSupport
 
+@MainActor
 public class GDPRManager : NSObject
 {
     public static let shared = GDPRManager()
