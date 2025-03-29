@@ -105,11 +105,11 @@ public class GDPRManager : NSObject
     
     public var canRequestAds: Bool
     {
-        return UMPConsentInformation.sharedInstance.canRequestAds
+        return ConsentInformation.shared.canRequestAds
     }
     
     public var isPrivacyOptionsRequired: Bool {
-        return UMPConsentInformation.sharedInstance.privacyOptionsRequirementStatus == .required
+        return ConsentInformation.shared.privacyOptionsRequirementStatus == .required
     }
     
     public func isVendorAutorized(vendorID: Int) -> Bool
@@ -197,20 +197,20 @@ public extension GDPRManager {
     func gatherConsent(from topVC: UIViewController? = nil, testDeviceIdentifiers: [String] = []) async -> Error? {
         await withCheckedContinuation { continuation in
             if (isGDPR && !canShowAds) {
-                UMPConsentInformation.sharedInstance.reset()
+                ConsentInformation.shared.reset()
             }
             
-            let parameters = UMPRequestParameters()
-            parameters.tagForUnderAgeOfConsent = false
+            let parameters = RequestParameters()
+            parameters.isTaggedForUnderAgeOfConsent = false
             
             if testDeviceIdentifiers.count > 0 {
-                let debugSettings = UMPDebugSettings()
+                let debugSettings = DebugSettings()
                 debugSettings.testDeviceIdentifiers = testDeviceIdentifiers
-                debugSettings.geography = UMPDebugGeography.EEA
+                debugSettings.geography = DebugGeography.EEA
                 parameters.debugSettings = debugSettings
             }
             
-            UMPConsentInformation.sharedInstance.requestConsentInfoUpdate(with: parameters) { requestConsentError in
+            ConsentInformation.shared.requestConsentInfoUpdate(with: parameters) { requestConsentError in
                 if let error = requestConsentError {
                     return continuation.resume(returning: error)
                 }
@@ -219,7 +219,7 @@ public extension GDPRManager {
                     return continuation.resume(returning: MTError(title: "Cannot get top view controller", description: "", code: -1))
                 }
                 
-                UMPConsentForm.loadAndPresentIfRequired(from: topViewController) {
+                ConsentForm.loadAndPresentIfRequired(from: topViewController) {
                     loadAndPresentError in
                     
                     if let error = loadAndPresentError {
