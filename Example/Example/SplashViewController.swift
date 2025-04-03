@@ -81,6 +81,7 @@ extension SplashViewController {
             //Load configs online then setup
             ALMHelper.shared.configs.enableAds = true
             ALMHelper.shared.configs.showInterstitial = true
+            ALMHelper.shared.configs.forceOrientationAd = true
             ALMHelper.shared.configs.orientation = .portrait // Setting this will force ads to load and display only in portrait mode.
             //...
             

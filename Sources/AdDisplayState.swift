@@ -17,7 +17,7 @@
 
     @objc public let state: Int
     @objc public let rewardAmount: Int
-    
+
     public var isReward: Bool {
         return self is AdDisplayRewardState
     }
@@ -25,6 +25,16 @@
     public init(state: Int, rewardAmount: Int = 0) {
         self.state = state
         self.rewardAmount = rewardAmount
+    }
+
+    public var title: String {
+        switch state {
+        case 0: return "notReady"
+        case 1: return "failed"
+        case 2: return "showed"
+        case 3: return "hidden"
+        default: return "unknown"
+        }
     }
 }
 

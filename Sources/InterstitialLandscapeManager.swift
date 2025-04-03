@@ -1,5 +1,5 @@
 //
-//  InterstitialManager.swift
+//  InterstitialLandscapeManager.swift
 //  ALMHelper
 //
 //  Created by Mitu Ultra on 11/3/25.
@@ -9,7 +9,7 @@
 import AppLovinSDK
 import MiTuKit
 
-public class InterstitialManager: ALMBaseAd {
+public class InterstitialLandscapeManager: ALMBaseAd {
     public override init(adUnitId: String) {
         guard !adUnitId.isEmpty else {
             fatalError("adUnitId cannot be empty.")
@@ -28,17 +28,17 @@ public class InterstitialManager: ALMBaseAd {
 
 }
 
-extension InterstitialManager {
+extension InterstitialLandscapeManager {
     public override func loadAd() {
         if isAdReady {
-            AdLog("Interstitial isReady")
+            AdLog("Interstitial Landscape isReady")
             return
         }
         
         if configs.forceOrientationAd {
             let deviceOrientation = ALDeviceOrientation.current
-            if configs.orientation != deviceOrientation {
-                AdLog("Interstitial load failed - Orientation Mismatch, orientation config: \(configs.orientation), device: \(deviceOrientation)")
+            if deviceOrientation != .landscape {
+                AdLog("Interstitial Landscape load failed - Orientation Mismatch, orientation config is landscape, device: \(deviceOrientation)")
                 return
             }
         }
@@ -48,12 +48,12 @@ extension InterstitialManager {
 
         delegate?.interstitialAdLoadCalled(for: adUnitId)
         interstitialAd.load()
-        AdLog("Interstitial loadAd is called")
+        AdLog("Interstitial Landscape loadAd is called")
     }
 
     public override func showAds(placement: String = "", _ completion: ((AdDisplayState) -> Void)? = nil) {
         if !isAdReady  {
-            AdLog("Interstitial not ready")
+            AdLog("Landscape Interstitial not ready")
             completion?(.notReady)
             loadAd()
             return
@@ -61,8 +61,8 @@ extension InterstitialManager {
         
         if configs.forceOrientationAd {
             let deviceOrientation = ALDeviceOrientation.current
-            if configs.orientation != deviceOrientation {
-                AdLog("Interstitial show failed - Orientation Mismatch, orientation config: \(configs.orientation), device: \(deviceOrientation)")
+            if deviceOrientation != .landscape {
+                AdLog("Interstitial Landscape show failed - Orientation Mismatch, orientation config is landscape, device: \(deviceOrientation)")
                 completion?(.notReady)
                 return
             }
@@ -73,28 +73,28 @@ extension InterstitialManager {
         adCompletionHandle = completion
         
         if placement.isEmpty {
-            AdLog("Interstitial show called")
+            AdLog("Interstitial Landscape show called")
             interstitialAd.show()
         } else {
-            AdLog("Interstitial show called with placement: \(placement)")
+            AdLog("Interstitial Landscape show called with placement: \(placement)")
             interstitialAd.show(forPlacement: placement)
         }
     }
 }
 
-extension InterstitialManager: MAAdViewAdDelegate {
+extension InterstitialLandscapeManager: MAAdViewAdDelegate {
     public func didExpand(_ ad: MAAd) {
-        AdLog("Interstitial delegate: didExpand")
+        AdLog("Interstitial Landscape delegate: didExpand")
         delegate?.didExpand(ad)
     }
 
     public func didCollapse(_ ad: MAAd) {
-        AdLog("Interstitial delegate: didCollapse")
+        AdLog("Interstitial Landscape delegate: didCollapse")
         delegate?.didCollapse(ad)
     }
 
     public func didLoad(_ ad: MAAd) {
-        AdLog("Interstitial delegate: didLoad")
+        AdLog("Interstitial Landscape delegate: didLoad")
         delegate?.didLoad(ad)
         retryAttempt = 0
     }
@@ -102,7 +102,7 @@ extension InterstitialManager: MAAdViewAdDelegate {
     public func didFailToLoadAd(
         forAdUnitIdentifier adUnitIdentifier: String, withError error: MAError
     ) {
-        AdLog("Interstitial delegate: didFailToLoadAd - error:\(error.description)")
+        AdLog("Interstitial Landscape delegate: didFailToLoadAd - error:\(error.description)")
         delegate?.didFailToLoadAd(forAdUnitIdentifier: adUnitIdentifier, withError: error)
 
         if configs.retryAfterFailed {
@@ -116,7 +116,7 @@ extension InterstitialManager: MAAdViewAdDelegate {
     }
 
     public func didDisplay(_ ad: MAAd) {
-        AdLog("Interstitial delegate: didDisplay")
+        AdLog("Interstitial Landscape delegate: didDisplay")
         delegate?.didDisplay(ad)
         delegate?.showInterstitialAdSuccess(ad, placement: self.placement)
         
@@ -124,7 +124,7 @@ extension InterstitialManager: MAAdViewAdDelegate {
     }
 
     public func didHide(_ ad: MAAd) {
-        AdLog("Interstitial delegate: didHide")
+        AdLog("Interstitial Landscape delegate: didHide")
         delegate?.didHide(ad)
         
         adCompletionHandle?(.hidden)
@@ -136,13 +136,13 @@ extension InterstitialManager: MAAdViewAdDelegate {
     }
 
     public func didClick(_ ad: MAAd) {
-        AdLog("Interstitial delegate: didClick")
+        AdLog("Interstitial Landscape delegate: didClick")
         delegate?.didClick(ad)
         delegate?.showInterstitialAdClick(ad, placement: self.placement)
     }
 
     public func didFail(toDisplay ad: MAAd, withError error: MAError) {
-        AdLog("Interstitial delegate: didFail to Display: \(error.description)")
+        AdLog("Interstitial Landscape delegate: didFail to Display: \(error.description)")
         delegate?.didFail(toDisplay: ad, withError: error)
         
         adCompletionHandle?(.failed)
@@ -155,9 +155,9 @@ extension InterstitialManager: MAAdViewAdDelegate {
 
 
 //MARK: MAAdRevenueDelegate
-extension InterstitialManager: MAAdRevenueDelegate {
+extension InterstitialLandscapeManager: MAAdRevenueDelegate {
     public func didPayRevenue(for ad: MAAd) {
-        AdLog("Interstitial delegate: didPayRevenue")
+        AdLog("Interstitial Landscape delegate: didPayRevenue")
         delegate?.didPayRevenue(for: ad)
 
     }

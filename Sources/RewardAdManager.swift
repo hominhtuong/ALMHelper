@@ -53,6 +53,7 @@ extension RewardAdManager {
         if !isAdReady  {
             AdLog("RewardAd not ready")
             completion?(.notReady)
+            loadAd()
             return
         }
         

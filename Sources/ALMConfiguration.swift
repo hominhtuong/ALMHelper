@@ -46,4 +46,7 @@ public class ALMConfiguration {
     
     /// Defines the preferred orientation for ad display (portrait or landscape).
     public var orientation: ALDeviceOrientation = .portrait
+    
+    /// Enables or disables debug logging for ad operations.
+    public var logDebug: Bool = true
 }

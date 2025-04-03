@@ -52,6 +52,7 @@ extension OpenAdManager {
         if !isAdReady {
             AdLog("OpenAd not ready")
             completion?(.notReady)
+            loadAd()
             return
         }
 

@@ -20,6 +20,7 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .white
 
+        ALMHelper.shared.loadLandscapeInterstitial()
         setupView()
     }
 
@@ -47,46 +48,47 @@ class ViewController: UIViewController {
             $0.layer.cornerRadius = 8
             $0.setTitle("Show Ad", for: .normal)
             $0.handle {
-                let random = Int.random(in: 0..<3)
-                switch random {
-                case 0:
-                    printDebug("show RewardAd")
-                    ALMHelper.shared.showRewardAd(placement: "home_view_controller") { adState in
-                        if adState.isReward {
-                            printDebug("Reward received: \(adState.rewardAmount)")
-                            return
-                        }
-                        switch adState {
-                        case .failed:
-                            printDebug("ad failed")
-                            break
-                        case .hidden:
-                            printDebug("app hidden")
-                            break
-                        case .notReady:
-                            printDebug("ad not ready")
-                            break
-                        case .showed:
-                            printDebug("ad did display")
-                            break
-                        default:
-                            break
-                        }
-                    }
-                    break
-                case 1:
-                    printDebug("show Interstitial")
-                    ALMHelper.shared.showInterstitial { adState in
-
-                    }
-                    break
-                case 2:
-                    printDebug("show OpenAd")
-                    ALMHelper.shared.showOpenAds()
-                    break
-                default:
-                    break
-                }
+                ALMHelper.shared.showInterstitial()
+//                let random = Int.random(in: 0..<3)
+//                switch random {
+//                case 0:
+//                    printDebug("show RewardAd")
+//                    ALMHelper.shared.showRewardAd(placement: "home_view_controller") { adState in
+//                        if adState.isReward {
+//                            printDebug("Reward received: \(adState.rewardAmount)")
+//                            return
+//                        }
+//                        switch adState {
+//                        case .failed:
+//                            printDebug("ad failed")
+//                            break
+//                        case .hidden:
+//                            printDebug("app hidden")
+//                            break
+//                        case .notReady:
+//                            printDebug("ad not ready")
+//                            break
+//                        case .showed:
+//                            printDebug("ad did display")
+//                            break
+//                        default:
+//                            break
+//                        }
+//                    }
+//                    break
+//                case 1:
+//                    printDebug("show Interstitial")
+//                    ALMHelper.shared.showInterstitial { adState in
+//
+//                    }
+//                    break
+//                case 2:
+//                    printDebug("show OpenAd")
+//                    ALMHelper.shared.showOpenAds()
+//                    break
+//                default:
+//                    break
+//                }
 
             }
         }

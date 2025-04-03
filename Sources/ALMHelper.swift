@@ -27,6 +27,16 @@ public class ALMHelper: NSObject {
         }
     }
 
+    public var interstitialLandscapeManager: InterstitialLandscapeManager?
+    public var interstitialLandscapeDelegate: ALMHelperDelegate? {
+        get {
+            return interstitialManager?.delegate
+        }
+        set {
+            interstitialManager?.delegate = newValue
+        }
+    }
+
     //OpenAd
     private var openAdLastTime: TimeInterval = 0
 
@@ -91,7 +101,9 @@ extension ALMHelper {
         -> Error?
     {
         return await GDPRManager.shared.requestTracking(
-            from: topVC, testDeviceIdentifiers: [])
+            from: topVC,
+            testDeviceIdentifiers: []
+        )
     }
 
     public func setupUnits(units: ALMUnits) async {
@@ -99,7 +111,8 @@ extension ALMHelper {
 
         if let openAdUnitId = units.openAdUnitId, openAdUnitId.notNil {
             self.openAdManager = OpenAdManager(
-                adUnitId: openAdUnitId)
+                adUnitId: openAdUnitId
+            )
         }
 
         if let bannerAdUnitId = units.bannerAdUnitId, bannerAdUnitId.notNil {
@@ -110,12 +123,14 @@ extension ALMHelper {
             interstitialAdUnitId.notNil
         {
             self.interstitialManager = InterstitialManager(
-                adUnitId: interstitialAdUnitId)
+                adUnitId: interstitialAdUnitId
+            )
         }
 
         if let rewardAdUnitId = units.rewardAdUnitId, rewardAdUnitId.notNil {
             self.rewardManager = RewardAdManager(
-                adUnitId: rewardAdUnitId)
+                adUnitId: rewardAdUnitId
+            )
         }
 
         if let nativeAdUnitId = units.nativeAdUnitId, nativeAdUnitId.notNil {
@@ -165,12 +180,14 @@ extension ALMHelper {
         if let privacyURL = privacyPolicyURL {
             settings.termsAndPrivacyPolicyFlowSettings.isEnabled = true
             settings.termsAndPrivacyPolicyFlowSettings.privacyPolicyURL = URL(
-                string: privacyURL)
+                string: privacyURL
+            )
         }
 
         if let termsURL = termsOfServiceURL {
             settings.termsAndPrivacyPolicyFlowSettings.termsOfServiceURL = URL(
-                string: termsURL)
+                string: termsURL
+            )
             settings.termsAndPrivacyPolicyFlowSettings
                 .shouldShowTermsAndPrivacyPolicyAlertInGDPR = true
 
@@ -234,6 +251,14 @@ extension ALMHelper {
         frequencyCapping: Int? = nil,
         _ completion: ((AdDisplayState) -> Void)? = nil
     ) {
+        if configs.forceOrientationAd {
+            let deviceOrientation = ALDeviceOrientation.current
+            if deviceOrientation == .landscape {
+                showLandscapeInterstitial(placement: placement, percent: percent, frequencyCapping: frequencyCapping, completion)
+                return
+            }
+        }
+
         guard let interstitial = interstitialManager else {
             AdLog("Interstitial Manager has not been initialized.")
             return
@@ -276,7 +301,7 @@ extension ALMHelper {
         )
         if randomPercent < impressionPercentage {
             interstitial.showAds(placement: placement) { state in
-                AdLog("Interstitial show state: \(state)")
+                AdLog("Interstitial show state: \(state.title)")
                 if state == .hidden {
                     ALMHelper.shared.interstitialLastTime =
                         Date().timeIntervalSince1970
@@ -286,6 +311,122 @@ extension ALMHelper {
             }
         } else {
             AdLog("Interstitial don't show")
+            if let completion = completion {
+                completion(.notReady)
+            }
+        }
+    }
+}
+
+//MARK: - Landscape Interstitial
+extension ALMHelper {
+    public func initLandscapeInterstitial() {
+        let deviceOrientation = ALDeviceOrientation.current
+        guard deviceOrientation == .landscape else {
+            AdLog("Device is not in landscape orientation")
+            return
+        }
+
+        guard let interstitialAdUnitId = self.adUnits.interstitialAdUnitId,
+            interstitialAdUnitId.notNil
+        else {
+            AdLog("Landscape Interstitial not ready")
+            return
+        }
+
+        self.interstitialLandscapeManager = InterstitialLandscapeManager(
+            adUnitId: interstitialAdUnitId
+        )
+        
+        AdLog("Landscape Interstitial has been initialized.")
+    }
+
+    public func loadLandscapeInterstitial() {
+        guard configs.enableAds, configs.showInterstitial else {
+            AdLog("Landscape Interstitial not ready")
+            return
+        }
+
+        let deviceOrientation = ALDeviceOrientation.current
+        guard deviceOrientation == .landscape else {
+            AdLog("Device is not in landscape orientation")
+            return
+        }
+        
+        if interstitialLandscapeManager == nil {
+            AdLog("Landscape Interstitial Manager has not been initialized.")
+            initLandscapeInterstitial()
+        }
+        
+        interstitialLandscapeManager?.loadAd()
+    }
+
+    public func showLandscapeInterstitial(
+        placement: String = "",
+        percent: Int? = nil,
+        frequencyCapping: Int? = nil,
+        _ completion: ((AdDisplayState) -> Void)? = nil
+    ) {
+        guard let interstitial = interstitialLandscapeManager else {
+            AdLog("Landscape Interstitial Manager has not been initialized.")
+            initLandscapeInterstitial()
+            return
+        }
+
+        guard configs.enableAds, configs.showInterstitial else {
+            AdLog("Landscape Interstitial not ready")
+            completion?(.notReady)
+            return
+        }
+        
+        let deviceOrientation = ALDeviceOrientation.current
+        guard deviceOrientation == .landscape else {
+            AdLog("Device is not in landscape orientation")
+            showInterstitial(placement: placement, percent: percent, frequencyCapping: frequencyCapping, completion)
+            return
+        }
+
+        let date = Date().timeIntervalSince1970
+
+        let timeBetweenAds = date - ALMHelper.shared.openAdLastTime
+        if timeBetweenAds < configs.timeBetweenAds.toDouble {
+            AdLog("Landscape Interstitial time between ads: \(timeBetweenAds)")
+            if let completion = completion {
+                completion(.notReady)
+            }
+            return
+        }
+
+        let impressionPercentage =
+            percent ?? configs.impressionPercentage
+        let frequencyCapping =
+            frequencyCapping ?? configs.frequencyCapping
+
+        let diff = date - ALMHelper.shared.interstitialLastTime
+        if diff < frequencyCapping.toDouble {
+            AdLog("Landscape Interstitial frequency capping: \(diff)")
+            if let completion = completion {
+                completion(.notReady)
+            }
+            return
+        }
+
+        let randomPercent = Int.random(in: 0...99)
+        AdLog(
+            "impression percentage: \(impressionPercentage), random: \(randomPercent)"
+        )
+        if randomPercent < impressionPercentage {
+            interstitial.showAds(placement: placement) { state in
+                AdLog("Landscape Interstitial show state: \(state.title)")
+                if state == .hidden {
+                    ALMHelper.shared.interstitialLastTime =
+                        Date().timeIntervalSince1970
+                }
+
+                completion?(state)
+            }
+        } else {
+            AdLog("Landscape Interstitial don't show")
             if let completion = completion {
                 completion(.notReady)
             }
@@ -330,7 +471,7 @@ extension ALMHelper {
         }
 
         openAdManager.showAds(placement: placement) { state in
-            AdLog("OpenAd show state: \(state)")
+            AdLog("OpenAd show state: \(state.title)")
             if state == .hidden {
                 ALMHelper.shared.openAdLastTime = Date().timeIntervalSince1970
             }
@@ -366,7 +507,7 @@ extension ALMHelper {
         }
 
         openAdManager.showAds(placement: placement) { state in
-            AdLog("ResumeAd show state: \(state)")
+            AdLog("ResumeAd show state: \(state.title)")
             if state == .hidden {
                 ALMHelper.shared.openAdLastTime = Date().timeIntervalSince1970
             }
@@ -402,7 +543,7 @@ extension ALMHelper {
         }
 
         rewardManager.showAds(placement: placement) { state in
-            AdLog("RewardAd show state: \(state)")
+            AdLog("RewardAd show state: \(state.title)")
             if state == .hidden {
                 ALMHelper.shared.rewardAdLastTime = Date().timeIntervalSince1970
             }
@@ -459,6 +600,9 @@ extension UIView {
         }
 
         bannerAd?.loadBannerAd(
-            parent: self, placement: placement, shimmerColor: shimmerColor)
+            parent: self,
+            placement: placement,
+            shimmerColor: shimmerColor
+        )
     }
 }
