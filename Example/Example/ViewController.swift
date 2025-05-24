@@ -15,6 +15,7 @@ class ViewController: UIViewController {
     let showAdButton = UIButton()
     let bannerView = UIView()
     private var bannerAdManager: BannerAdManager!
+    private var adaptiveBannerAdManager: AdaptiveBannerAdManager!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -25,6 +26,9 @@ class ViewController: UIViewController {
     }
 
     func setupView() {
+//        adaptiveBannerAdManager = AdaptiveBannerAdManager()
+//        adaptiveBannerAdManager.delegate = self
+        
         bannerAdManager = BannerAdManager()
         bannerAdManager.delegate = self
         
@@ -34,6 +38,7 @@ class ViewController: UIViewController {
                 $0.bottom.equalTo(botSafe)
                 $0.height.equalTo(50)
             }
+            //$0.attachAdaptiveBanner()
             $0.attachBanner(bannerAdManager,
                             placement: "MainBanner")
         }

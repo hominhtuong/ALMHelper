@@ -4,9 +4,9 @@ PODS:
     - GoogleUserMessagingPlatform
     - MiTuKit
     - SkeletonView
-  - AppLovinSDK (13.1.0)
+  - AppLovinSDK (13.3.0)
   - GoogleUserMessagingPlatform (3.0.0)
-  - MiTuKit (1.0.0)
+  - MiTuKit (1.0.1)
   - SkeletonView (1.30.4)
 
 DEPENDENCIES:
@@ -25,9 +25,9 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   ALMHelper: 938785af09e9b64b4a577e4ab318a32dae6e2ae5
-  AppLovinSDK: 539a0178d8bef4d68b2551a93526e0c1bba06cb2
+  AppLovinSDK: 5ed9dbada0de5a80e4546116994470011ed01f53
   GoogleUserMessagingPlatform: f8d0cdad3ca835406755d0a69aa634f00e76d576
-  MiTuKit: 4616930df568385534245eb22d550c94c6fcd4ab
+  MiTuKit: d5eaf307d9bb8576af5febe62597f1eae7052971
   SkeletonView: 5a050f6411e697abd4cda0a8d767013399dccd69
 
 PODFILE CHECKSUM: 37db18a07e6e6529ddcc5692019eceffe9290db0

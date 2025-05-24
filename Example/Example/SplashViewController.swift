@@ -70,6 +70,7 @@ extension SplashViewController {
             let adUnits = ALMUnits(
                 openAdUnitId: Configurations.AdUnits.openAdUnitId,
                 bannerAdUnitId: Configurations.AdUnits.bannerAdUnitId,
+                adaptiveBannerAdUnitId: Configurations.AdUnits.adaptiveBannerAdUnitId,
                 interstitialAdUnitId: Configurations.AdUnits
                     .interstitialAdUnitId,
                 rewardAdUnitId: Configurations.AdUnits.rewardAdUnitId,

@@ -605,4 +605,39 @@ extension UIView {
             shimmerColor: shimmerColor
         )
     }
+    
+    public func attachAdaptiveBanner(
+        _ bannerManager: AdaptiveBannerAdManager? = nil,
+        placement: String? = nil,
+        shimmerColor: UIColor = .lightGray,
+        delegate: ALMHelperDelegate? = nil,
+        adViewConfigs: MAAdViewConfiguration? = nil
+    ) {
+        guard
+            ALMHelper.shared.configs.enableAds
+        else {
+            AdLog("Adaptive BannerAd is not enabled")
+            return
+        }
+
+        var bannerAd: AdaptiveBannerAdManager?
+        if let bannerManager = bannerManager {
+            bannerAd = bannerManager
+        } else if let adId = ALMHelper.shared.adUnits.adaptiveBannerAdUnitId {
+            bannerAd = AdaptiveBannerAdManager(adUnitId: adId)
+        } else {
+            return
+        }
+
+        if let delegate = delegate {
+            bannerAd?.delegate = delegate
+        }
+
+        bannerAd?.loadAdaptiveBannerAd(
+            parent: self,
+            placement: placement,
+            shimmerColor: shimmerColor,
+            adViewConfigs: adViewConfigs
+        )
+    }
 }

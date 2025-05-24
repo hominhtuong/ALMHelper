@@ -8,6 +8,7 @@
 public struct ALMUnits {
     public let openAdUnitId:            String?
     public let bannerAdUnitId:          String?
+    public let adaptiveBannerAdUnitId:  String?
     public let interstitialAdUnitId:    String?
     public let rewardAdUnitId:          String?
     public let nativeAdUnitId:          String?
@@ -15,12 +16,14 @@ public struct ALMUnits {
     public init(
         openAdUnitId:           String? = nil,
         bannerAdUnitId:         String? = nil,
+        adaptiveBannerAdUnitId: String? = nil,
         interstitialAdUnitId:   String? = nil,
         rewardAdUnitId:         String? = nil,
         nativeAdUnitId:         String? = nil
     ) {
         self.openAdUnitId = openAdUnitId
         self.bannerAdUnitId = bannerAdUnitId
+        self.adaptiveBannerAdUnitId = adaptiveBannerAdUnitId
         self.interstitialAdUnitId = interstitialAdUnitId
         self.rewardAdUnitId = rewardAdUnitId
         self.nativeAdUnitId = nativeAdUnitId
