@@ -8,14 +8,14 @@
 
 struct Configurations {
     static let applovinSDKKey =
-        "4K78ykZ68hzpvAIqxA7WTnWox8oW5qoVtEhOaSAy0celB0L4ZGSJqTgnFmKwlSSkynk57q_ifORnmLmZiAbxEO"
+        "WDPGNa7vUE7mAwnq0cfPyQocKtZzVcZVB1hnk4kdzGhzXTwTZPZq3FX5OTlQt5khEUfVelPH51dsVLHRQQcHSZ"
 
     struct AdUnits {
-        static let openAdUnitId = "10280407e380f2da"
-        static let interstitialAdUnitId = "0b3265ac7c42693c"
-        static let bannerAdUnitId = "31e5832525029131"
-        static let adaptiveBannerAdUnitId = "31e5832525029131"
-        static let rewardAdUnitId = "1f2bc91e5261ed03"
-        static let nativeAdUnitId = "a6a8665cf6a061f3"
+        static let openAdUnitId = "6839bb3f736d1b85"
+        static let interstitialAdUnitId = "6839bb3f736d1b85"
+        static let bannerAdUnitId = "9619117fbd0cc235"
+        static let adaptiveBannerAdUnitId = ""
+        static let rewardAdUnitId = ""
+        static let nativeAdUnitId = ""
     }
 }

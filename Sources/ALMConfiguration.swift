@@ -10,7 +10,7 @@ import UIKit
 public class ALMConfiguration {
     /// Default is 0 - Always request ads without frequency capping.
     public var frequencyCapping: Int = 0
-
+    
     /// Default is 100% - Ads will always be shown.
     public var impressionPercentage: Int = 100
     
@@ -19,7 +19,7 @@ public class ALMConfiguration {
     
     /// Enable or disable ads globally.
     public var enableAds = true
-
+    
     /// Enable or disable App Open Ads (AOA).
     public var showAoa = true
     
@@ -49,4 +49,7 @@ public class ALMConfiguration {
     
     /// Enables or disables debug logging for ad operations.
     public var logDebug: Bool = true
+    
+    /// If true, shimmer will be removed immediately when ad fails to load.
+    public var removeShimmerOnFail: Bool = true
 }

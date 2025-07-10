@@ -16,9 +16,11 @@ class SplashViewController: UIViewController {
     init() {
         super.init(nibName: nil, bundle: nil)
     }
-
+    
     //Variables
     let loadingLabel = LoadingLabel()
+    
+    let bannerView = UIView()
 }
 
 //MARK: Lifecycle
@@ -27,18 +29,18 @@ extension SplashViewController {
         super.viewDidLoad()
         setupView()
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         self.navigationController?.setNavigationBarHidden(true, animated: false)
     }
-
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-
+        
         setupAd()
     }
-
+    
     override var preferredStatusBarStyle: UIStatusBarStyle {
         return .lightContent
     }
@@ -48,11 +50,11 @@ extension SplashViewController {
 extension SplashViewController {
     private func setupView() {
         view.backgroundColor = .random
-
+        
         let loadingText = "Loading..."
         let font: UIFont = .bold(20)
         let width: CGFloat = loadingText.width(height: 30, font: font) + 16
-
+        
         loadingLabel >>> view >>> {
             $0.snp.makeConstraints {
                 $0.center.equalToSuperview()
@@ -63,8 +65,16 @@ extension SplashViewController {
             $0.text = loadingText
             $0.startAnimating()
         }
+        
+        bannerView >>> view >>> {
+            $0.snp.makeConstraints {
+                $0.leading.trailing.equalToSuperview()
+                $0.bottom.equalTo(botSafe)
+                $0.height.equalTo(50)
+            }
+        }
     }
-
+    
     func setupAd() {
         Task {
             let adUnits = ALMUnits(
@@ -86,23 +96,27 @@ extension SplashViewController {
             ALMHelper.shared.configs.orientation = .portrait // Setting this will force ads to load and display only in portrait mode.
             //...
             
+            await delay(0.5)
+            self.bannerView.attachBanner(placement: "SPLASH")
+            
+            await delay(1)
             ALMHelper.shared.loadInterstitial()
-
-            await delay(3)
+            
+            await delay(2)
             self.loadingLabel.stopAnimating()
-
+            
             //...
             self.goToMain()
         }
     }
-
+    
     func goToMain() {
         if let window = currentWindow() {
             let navigation = UINavigationController(
                 rootViewController: ViewController())
             window.rootViewController = navigation
             window.makeKeyAndVisible()
-
+            
             UIView.transition(
                 with: window, duration: 0.5, options: .transitionCrossDissolve,
                 animations: {}, completion: nil)

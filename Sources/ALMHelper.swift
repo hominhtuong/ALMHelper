@@ -10,13 +10,13 @@ import MiTuKit
 
 public class ALMHelper: NSObject {
     public static let shared = ALMHelper()
-
+    
     public var configs: ALMConfiguration = ALMConfiguration()
     public var adUnits: ALMUnits = ALMUnits()
-
+    
     //Interstitial
     private var interstitialLastTime: TimeInterval = 0
-
+    
     public var interstitialManager: InterstitialManager?
     public var interstitialDelegate: ALMHelperDelegate? {
         get {
@@ -26,7 +26,7 @@ public class ALMHelper: NSObject {
             interstitialManager?.delegate = newValue
         }
     }
-
+    
     public var interstitialLandscapeManager: InterstitialLandscapeManager?
     public var interstitialLandscapeDelegate: ALMHelperDelegate? {
         get {
@@ -36,10 +36,10 @@ public class ALMHelper: NSObject {
             interstitialManager?.delegate = newValue
         }
     }
-
+    
     //OpenAd
     private var openAdLastTime: TimeInterval = 0
-
+    
     public var openAdManager: OpenAdManager?
     public var openAdDelegate: ALMHelperDelegate? {
         get {
@@ -49,10 +49,10 @@ public class ALMHelper: NSObject {
             openAdManager?.delegate = newValue
         }
     }
-
+    
     //RewardAd
     private var rewardAdLastTime: TimeInterval = 0
-
+    
     public var rewardManager: RewardAdManager?
     public var rewardAdDelegate: ALMHelperDelegate? {
         get {
@@ -62,7 +62,7 @@ public class ALMHelper: NSObject {
             rewardManager?.delegate = newValue
         }
     }
-
+    
     //NativeAd
     public var nativeAdManager: NativeAdManager?
     public var nativeAdDelegate: ALMHelperDelegate? {
@@ -73,7 +73,7 @@ public class ALMHelper: NSObject {
             nativeAdManager?.delegate = newValue
         }
     }
-
+    
     //BannerAd
     public var bannerAdManager: BannerAdManager?
     public var bannerAdDelegate: ALMHelperDelegate? {
@@ -84,7 +84,7 @@ public class ALMHelper: NSObject {
             bannerAdManager?.delegate = newValue
         }
     }
-
+    
 }
 
 //MARK: - Setup
@@ -98,75 +98,75 @@ extension ALMHelper {
         }
     }
     public func requestTracking(from topVC: UIViewController? = nil) async
-        -> Error?
+    -> Error?
     {
         return await GDPRManager.shared.requestTracking(
             from: topVC,
             testDeviceIdentifiers: []
         )
     }
-
+    
     public func setupUnits(units: ALMUnits) async {
         adUnits = units
-
+        
         if let openAdUnitId = units.openAdUnitId, openAdUnitId.notNil {
             self.openAdManager = OpenAdManager(
                 adUnitId: openAdUnitId
             )
         }
-
+        
         if let bannerAdUnitId = units.bannerAdUnitId, bannerAdUnitId.notNil {
             self.bannerAdManager = BannerAdManager(adUnitId: bannerAdUnitId)
         }
-
+        
         if let interstitialAdUnitId = units.interstitialAdUnitId,
-            interstitialAdUnitId.notNil
+           interstitialAdUnitId.notNil
         {
             self.interstitialManager = InterstitialManager(
                 adUnitId: interstitialAdUnitId
             )
         }
-
+        
         if let rewardAdUnitId = units.rewardAdUnitId, rewardAdUnitId.notNil {
             self.rewardManager = RewardAdManager(
                 adUnitId: rewardAdUnitId
             )
         }
-
+        
         if let nativeAdUnitId = units.nativeAdUnitId, nativeAdUnitId.notNil {
             self.nativeAdManager = NativeAdManager(adUnitId: nativeAdUnitId)
         }
-
+        
     }
-
+    
     public func initAd(sdkKey: String) async {
         guard sdkKey.notNil else {
             AdLog("SDK key is nil")
             return
         }
-
+        
         await withCheckedContinuation { continuation in
             let initConfig = ALSdkInitializationConfiguration(
                 sdkKey: sdkKey
             ) { builder in
-
+                
                 builder.mediationProvider = ALMediationProviderMAX
-
-                #if DEBUG
-                    if let currentIDFV = UIDevice.current.identifierForVendor?
-                        .uuidString
-                    {
-                        builder.testDeviceAdvertisingIdentifiers = [currentIDFV]
-                    }
-                #endif
+                
+#if DEBUG
+                if let currentIDFV = UIDevice.current.identifierForVendor?
+                    .uuidString
+                {
+                    builder.testDeviceAdvertisingIdentifiers = [currentIDFV]
+                }
+#endif
             }
-
+            
             ALSdk.shared().initialize(with: initConfig) { sdkConfig in
                 continuation.resume()
             }
         }
     }
-
+    
     public func updateSettings(
         privacyPolicyURL: String?,
         termsOfServiceURL: String?,
@@ -176,42 +176,42 @@ extension ALMHelper {
         showCreativeDebugger: Bool
     ) async {
         let settings = ALSdk.shared().settings
-
+        
         if let privacyURL = privacyPolicyURL {
             settings.termsAndPrivacyPolicyFlowSettings.isEnabled = true
             settings.termsAndPrivacyPolicyFlowSettings.privacyPolicyURL = URL(
                 string: privacyURL
             )
         }
-
+        
         if let termsURL = termsOfServiceURL {
             settings.termsAndPrivacyPolicyFlowSettings.termsOfServiceURL = URL(
                 string: termsURL
             )
             settings.termsAndPrivacyPolicyFlowSettings
                 .shouldShowTermsAndPrivacyPolicyAlertInGDPR = true
-
+            
         }
-
-        #if DEBUG
-
-            if debugUserGeography {
-                settings.termsAndPrivacyPolicyFlowSettings.debugUserGeography =
-                    .GDPR
-            }
-
-            settings.isVerboseLoggingEnabled = isVerboseLoggingEnabled
-
-            if showMediationDebugger {
-                ALSdk.shared().showMediationDebugger()
-            }
-
-            if showCreativeDebugger {
-                ALSdk.shared().showCreativeDebugger()
-            }
-        #endif
+        
+#if DEBUG
+        
+        if debugUserGeography {
+            settings.termsAndPrivacyPolicyFlowSettings.debugUserGeography =
+                .GDPR
+        }
+        
+        settings.isVerboseLoggingEnabled = isVerboseLoggingEnabled
+        
+        if showMediationDebugger {
+            ALSdk.shared().showMediationDebugger()
+        }
+        
+        if showCreativeDebugger {
+            ALSdk.shared().showCreativeDebugger()
+        }
+#endif
     }
-
+    
     public func setup(
         sdkKey: String,
         units: ALMUnits,
@@ -244,7 +244,7 @@ extension ALMHelper {
         }
         interstitialManager?.loadAd()
     }
-
+    
     public func showInterstitial(
         placement: String = "",
         percent: Int? = nil,
@@ -258,20 +258,20 @@ extension ALMHelper {
                 return
             }
         }
-
+        
         guard let interstitial = interstitialManager else {
             AdLog("Interstitial Manager has not been initialized.")
             return
         }
-
+        
         guard configs.enableAds, configs.showInterstitial else {
             AdLog("Interstitial not ready")
             completion?(.notReady)
             return
         }
-
+        
         let date = Date().timeIntervalSince1970
-
+        
         let timeBetweenAds = date - ALMHelper.shared.openAdLastTime
         if timeBetweenAds < configs.timeBetweenAds.toDouble {
             AdLog("Interstitial time between ads: \(timeBetweenAds)")
@@ -280,12 +280,12 @@ extension ALMHelper {
             }
             return
         }
-
+        
         let impressionPercentage =
-            percent ?? configs.impressionPercentage
+        percent ?? configs.impressionPercentage
         let frequencyCapping =
-            frequencyCapping ?? configs.frequencyCapping
-
+        frequencyCapping ?? configs.frequencyCapping
+        
         let diff = date - ALMHelper.shared.interstitialLastTime
         if diff < frequencyCapping.toDouble {
             AdLog("Interstitial frequency capping: \(diff)")
@@ -294,7 +294,7 @@ extension ALMHelper {
             }
             return
         }
-
+        
         let randomPercent = Int.random(in: 0...99)
         AdLog(
             "impression percentage: \(impressionPercentage), random: \(randomPercent)"
@@ -304,9 +304,9 @@ extension ALMHelper {
                 AdLog("Interstitial show state: \(state.title)")
                 if state == .hidden {
                     ALMHelper.shared.interstitialLastTime =
-                        Date().timeIntervalSince1970
+                    Date().timeIntervalSince1970
                 }
-
+                
                 completion?(state)
             }
         } else {
@@ -326,27 +326,27 @@ extension ALMHelper {
             AdLog("Device is not in landscape orientation")
             return
         }
-
+        
         guard let interstitialAdUnitId = self.adUnits.interstitialAdUnitId,
-            interstitialAdUnitId.notNil
+              interstitialAdUnitId.notNil
         else {
             AdLog("Landscape Interstitial not ready")
             return
         }
-
+        
         self.interstitialLandscapeManager = InterstitialLandscapeManager(
             adUnitId: interstitialAdUnitId
         )
         
         AdLog("Landscape Interstitial has been initialized.")
     }
-
+    
     public func loadLandscapeInterstitial() {
         guard configs.enableAds, configs.showInterstitial else {
             AdLog("Landscape Interstitial not ready")
             return
         }
-
+        
         let deviceOrientation = ALDeviceOrientation.current
         guard deviceOrientation == .landscape else {
             AdLog("Device is not in landscape orientation")
@@ -360,7 +360,7 @@ extension ALMHelper {
         
         interstitialLandscapeManager?.loadAd()
     }
-
+    
     public func showLandscapeInterstitial(
         placement: String = "",
         percent: Int? = nil,
@@ -372,7 +372,7 @@ extension ALMHelper {
             initLandscapeInterstitial()
             return
         }
-
+        
         guard configs.enableAds, configs.showInterstitial else {
             AdLog("Landscape Interstitial not ready")
             completion?(.notReady)
@@ -385,9 +385,9 @@ extension ALMHelper {
             showInterstitial(placement: placement, percent: percent, frequencyCapping: frequencyCapping, completion)
             return
         }
-
+        
         let date = Date().timeIntervalSince1970
-
+        
         let timeBetweenAds = date - ALMHelper.shared.openAdLastTime
         if timeBetweenAds < configs.timeBetweenAds.toDouble {
             AdLog("Landscape Interstitial time between ads: \(timeBetweenAds)")
@@ -396,12 +396,12 @@ extension ALMHelper {
             }
             return
         }
-
+        
         let impressionPercentage =
-            percent ?? configs.impressionPercentage
+        percent ?? configs.impressionPercentage
         let frequencyCapping =
-            frequencyCapping ?? configs.frequencyCapping
-
+        frequencyCapping ?? configs.frequencyCapping
+        
         let diff = date - ALMHelper.shared.interstitialLastTime
         if diff < frequencyCapping.toDouble {
             AdLog("Landscape Interstitial frequency capping: \(diff)")
@@ -410,7 +410,7 @@ extension ALMHelper {
             }
             return
         }
-
+        
         let randomPercent = Int.random(in: 0...99)
         AdLog(
             "impression percentage: \(impressionPercentage), random: \(randomPercent)"
@@ -420,9 +420,9 @@ extension ALMHelper {
                 AdLog("Landscape Interstitial show state: \(state.title)")
                 if state == .hidden {
                     ALMHelper.shared.interstitialLastTime =
-                        Date().timeIntervalSince1970
+                    Date().timeIntervalSince1970
                 }
-
+                
                 completion?(state)
             }
         } else {
@@ -443,7 +443,7 @@ extension ALMHelper {
         }
         openAdManager?.loadAd()
     }
-
+    
     public func showOpenAds(
         placement: String = "",
         _ completion: ((AdDisplayState) -> Void)? = nil
@@ -452,16 +452,16 @@ extension ALMHelper {
             AdLog("OpenAd Manager has not been initialized.")
             return
         }
-
+        
         guard configs.enableAds, configs.showAoa else {
             AdLog("OpenAd not ready")
             completion?(.notReady)
             return
         }
-
+        
         let date = Date().timeIntervalSince1970
         let timeBetweenAds = date - ALMHelper.shared.interstitialLastTime
-
+        
         if timeBetweenAds < configs.timeBetweenAds.toDouble {
             AdLog("OpenAd time between ads: \(timeBetweenAds)")
             if let completion = completion {
@@ -469,17 +469,17 @@ extension ALMHelper {
             }
             return
         }
-
+        
         openAdManager.showAds(placement: placement) { state in
             AdLog("OpenAd show state: \(state.title)")
             if state == .hidden {
                 ALMHelper.shared.openAdLastTime = Date().timeIntervalSince1970
             }
-
+            
             completion?(state)
         }
     }
-
+    
     public func showResumeAds(
         placement: String = "",
         _ completion: ((AdDisplayState) -> Void)? = nil
@@ -488,16 +488,16 @@ extension ALMHelper {
             AdLog("ResumeAd Manager has not been initialized.")
             return
         }
-
+        
         guard configs.enableAds, configs.showResume else {
             AdLog("ResumeAd not ready")
             completion?(.notReady)
             return
         }
-
+        
         let date = Date().timeIntervalSince1970
         let timeBetweenAds = date - ALMHelper.shared.interstitialLastTime
-
+        
         if timeBetweenAds < configs.timeBetweenAds.toDouble {
             AdLog("OpenAd time between ads: \(timeBetweenAds)")
             if let completion = completion {
@@ -505,13 +505,13 @@ extension ALMHelper {
             }
             return
         }
-
+        
         openAdManager.showAds(placement: placement) { state in
             AdLog("ResumeAd show state: \(state.title)")
             if state == .hidden {
                 ALMHelper.shared.openAdLastTime = Date().timeIntervalSince1970
             }
-
+            
             completion?(state)
         }
     }
@@ -526,7 +526,7 @@ extension ALMHelper {
         }
         rewardManager?.loadAd()
     }
-
+    
     public func showRewardAd(
         placement: String = "",
         _ completion: ((AdDisplayState) -> Void)? = nil
@@ -535,41 +535,71 @@ extension ALMHelper {
             AdLog("RewardAd Manager has not been initialized.")
             return
         }
-
+        
         guard configs.enableAds, configs.showReward else {
             AdLog("RewardAd not ready")
             completion?(.notReady)
             return
         }
-
+        
         rewardManager.showAds(placement: placement) { state in
             AdLog("RewardAd show state: \(state.title)")
             if state == .hidden {
                 ALMHelper.shared.rewardAdLastTime = Date().timeIntervalSince1970
             }
-
+            
             completion?(state)
         }
     }
 }
 
-//MARK: - Native Ads + Banner Ads
+//MARK: - Native Ads
 /**
- Native ads + banner ads should be initialized using a dedicated class
+ Native ads  should be initialized using a dedicated class
  to enable reuse across multiple screens, avoid code duplication,
  and ensure better lifecycle management.
-
- Example: BannerAdManager helps manage banner ads for each screen.
-
- class ViewController: UiViewControlelr {
-    private var bannerAd: BannerAdManager?
- }
-
- func loadAd() {
-    self.bannerAd = BannerAdManager(adUnitId: Configurations.AdUnits.bannerAdUnitId)
-    self.bannerAd?.loadBannerAd(parent: bannerView)
- }
  */
+
+// MARK: - Banner Ads
+extension ALMHelper {
+    /// Load banner ad từ ALMHelper.shared
+    /// - Parameters:
+    ///   - parent: UIView chứa banner
+    ///   - placement: tên placement dùng cho tracking (tùy chọn)
+    ///   - shimmerColor: màu shimmer (default: lightGray)
+    ///   - delegate: delegate callback nếu cần
+    ///   - reuse: nếu true thì dùng lại bannerView thay vì tạo mới (default: false)
+    public func loadBannerAd(
+        in parent: UIView,
+        placement: String? = nil,
+        shimmerColor: UIColor = .lightGray,
+        delegate: ALMHelperDelegate? = nil,
+        reuse: Bool = false
+    ) {
+        guard configs.enableAds else {
+            AdLog("BannerAd is not enabled")
+            return
+        }
+        
+        if bannerAdManager == nil {
+            guard let bannerAdUnitId = adUnits.bannerAdUnitId else {
+                AdLog("BannerAd unit id is missing")
+                return
+            }
+            bannerAdManager = BannerAdManager(adUnitId: bannerAdUnitId)
+        }
+        
+        bannerAdManager?.loadBannerAd(
+            parent: parent,
+            placement: placement,
+            shimmerColor: shimmerColor,
+            delegate: nil,
+            revenueDelegate: nil,
+            almDelegate: delegate ?? bannerAdDelegate,
+            reuse: reuse
+        )
+    }
+}
 
 //MARK: - Banner Ads Utils
 extension UIView {
@@ -577,34 +607,33 @@ extension UIView {
         _ bannerManager: BannerAdManager? = nil,
         placement: String? = nil,
         shimmerColor: UIColor = .lightGray,
-        delegate: ALMHelperDelegate? = nil
+        delegate: ALMHelperDelegate? = nil,
+        reuse: Bool = true
     ) {
-        guard
-            ALMHelper.shared.configs.enableAds
-        else {
+        guard ALMHelper.shared.configs.enableAds else {
             AdLog("BannerAd is not enabled")
             return
         }
-
-        var bannerAd: BannerAdManager?
-        if let bannerManager = bannerManager {
-            bannerAd = bannerManager
-        } else if let adId = ALMHelper.shared.adUnits.bannerAdUnitId {
-            bannerAd = BannerAdManager(adUnitId: adId)
-        } else {
+        
+        let bannerAd = bannerManager ?? ALMHelper.shared.bannerAdManager
+        guard let bannerAd = bannerAd else {
+            AdLog("BannerAdManager is not initialized")
             return
         }
-
-        if let delegate = delegate {
-            bannerAd?.delegate = delegate
-        }
-
-        bannerAd?.loadBannerAd(
+        
+        let almDelegate = delegate ?? ALMHelper.shared.bannerAdDelegate
+        
+        bannerAd.loadBannerAd(
             parent: self,
             placement: placement,
-            shimmerColor: shimmerColor
+            shimmerColor: shimmerColor,
+            delegate: nil,
+            revenueDelegate: nil,
+            almDelegate: almDelegate,
+            reuse: reuse
         )
     }
+    
     
     public func attachAdaptiveBanner(
         _ bannerManager: AdaptiveBannerAdManager? = nil,
@@ -619,7 +648,7 @@ extension UIView {
             AdLog("Adaptive BannerAd is not enabled")
             return
         }
-
+        
         var bannerAd: AdaptiveBannerAdManager?
         if let bannerManager = bannerManager {
             bannerAd = bannerManager
@@ -628,11 +657,11 @@ extension UIView {
         } else {
             return
         }
-
+        
         if let delegate = delegate {
             bannerAd?.delegate = delegate
         }
-
+        
         bannerAd?.loadAdaptiveBannerAd(
             parent: self,
             placement: placement,
