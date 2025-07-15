@@ -65,6 +65,7 @@ extension RewardAdManager {
             }
         }
         
+        self.placement = placement
         delegate?.rewardAdShowCalled(for: self.adUnitId, placement: self.placement)
         adCompletionHandle = completion
         

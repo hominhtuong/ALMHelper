@@ -64,6 +64,7 @@ extension OpenAdManager {
             }
         }
         
+        self.placement = placement
         delegate?.openAdShowCalled(for: adUnitId, placement: placement)
         adCompletionHandle = completion
         
